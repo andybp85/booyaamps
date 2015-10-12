@@ -15,7 +15,9 @@ module.exports = function(grunt) {
 
     var config = {
         app  : require('./bower.json').appPath || 'src',
+        idx  : 'htdocs',
         dist : 'dist',
+        test : 'test',
         tmp  : '.tmp'
     };
 
@@ -31,8 +33,9 @@ module.exports = function(grunt) {
                 swapPath: '/tmp'
             },
             application: [
-                './src/**/*.php',
-                './test/**/*.php'
+                './<%= yeoman.app %>/**/*.php',
+                './<%= yeoman.idx %>/**/*.php',
+                './<%= yeoman.test %>/**/*.php'
             ]
         },
         phpcs: {
@@ -42,8 +45,9 @@ module.exports = function(grunt) {
             },
             application: {
                 dir: [
-                    './src',
-                    './test'
+                    './<%= yeoman.app %>',
+                    './<%= yeoman.idx %>',
+                    './<%= yeoman.test %>'
                 ]
             }
         },
@@ -54,7 +58,10 @@ module.exports = function(grunt) {
                 reportFormat: 'text'
             },
             application: {
-                dir: './src'
+                dir: [
+                    './<%= yeoman.app %>',
+                    './<%= yeoman.idx %>'
+                ]
             }
         },
         phpcpd: {
@@ -64,7 +71,10 @@ module.exports = function(grunt) {
                 ignoreExitCode: true
             },
             application: {
-                dir: './src'
+                dir: [
+                    './<%= yeoman.app %>',
+                    './<%= yeoman.idx %>'
+                ]
             }
         },
         phpunit: {
@@ -83,12 +93,12 @@ module.exports = function(grunt) {
                 files: [{
                     dot: true,
                     src: [
-                        '.tmp',
+                        '<%= yeoman.tmp %>',
                         '<%= yeoman.dist %>/*'
                     ]
                 }]
             },
-            server: '.tmp'
+            server: '<%= yeoman.tmp %>'
         },
 
         watch: {
@@ -111,8 +121,9 @@ module.exports = function(grunt) {
                 files: [
                     '<%= yeoman.app %>/{,*/}*.html',
                     '<%= yeoman.app %>/{,*/}*.php',
-                    '{.tmp,<%= yeoman.app %>}/scripts/{,*/}*.js',
-                    '{.tmp,<%= yeoman.app %>}/styles/{,*/}*.css',
+                    '<%= yeoman.app %>/{,*/}*.tpl',
+                    '{<%= yeoman.tmp %>,<%= yeoman.app %>}/scripts/{,*/}*.js',
+                    '{<%= yeoman.tmp %>,<%= yeoman.app %>}/styles/{,*/}*.css',
                     '<%= yeoman.app %>/images/{,*/}*.{png,jpg,jpeg,gif,webp,svg}'
                 ]
             }
@@ -124,7 +135,7 @@ module.exports = function(grunt) {
                     sourceMap: true
                 },
                 files: {
-                    '.tmp/styles/main.css': '<%= yeoman.app %>/styles/main.scss'
+                    '<%= yeoman.tmp %>/styles/main.css': '<%= yeoman.app %>/styles/main.scss'
                 }
             }
         },
@@ -145,15 +156,15 @@ module.exports = function(grunt) {
 
         open: {
             app: {
-                path: 'http://<%= connect.options.hostname %>:<%= connect.options.port %>/index.php'
+                path: 'http://<%= connect.options.hostname %>:<%= connect.options.port %>/'
             },
             dist: {
-                path: 'http://<%= connect.options.hostname %>:<%= connect.options.port %>/index.php'
+                path: 'http://<%= connect.options.hostname %>:<%= connect.options.port %>/'
             },
             report: {
                 path: 'docs/complexity/index.html'
             }
-        },  
+        },
 
         connect: {
             options: {
@@ -166,11 +177,11 @@ module.exports = function(grunt) {
                     middleware: function (connect) {
                         return [
                             lrSnippet,
-                            gateway(__dirname + path.sep + config.app, {
+                            gateway(__dirname + path.sep + config.idx, {
                                 '.php': 'php-cgi'
                             }),
-                            mountFolder(connect, '.tmp'),
-                            mountFolder(connect, config.app)
+                            mountFolder(connect, '<%= yeoman.tmp %>'),
+                            mountFolder(connect, config.idx)
                         ];
                     }
                 }
