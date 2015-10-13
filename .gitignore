@@ -17,3 +17,5 @@ src/templates/cache/
 Thumbs.db
 *.sw*
 .env
+
+app/src/autoload.php
