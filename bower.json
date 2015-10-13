@@ -2,7 +2,9 @@
   "name": "booyaamps.com",
   "version": "1.0.0",
   "dependencies": {
+    "normalize-css": "~3.0.3",
     "jquery": "~2.1.4",
-    "bootstrap-sass": "~3.3.5"
+    "neat": "~1.7.2",
+    "bitters": "~1.1.0"
   }
 }

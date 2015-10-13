@@ -1,4 +1,4 @@
-{strip}
+{*{strip}*}
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -11,13 +11,15 @@
     <meta name="description" content="Source code generated using layoutit.com">
     <meta name="author" content="LayoutIt!">
 
-    {literal}<!-- build:css({.,app}) styles/main.css -->{/literal}
-    <link rel="stylesheet" href="styles/main.css">
+    {literal}<!-- build:css({.,app}) styles/vendor.css -->{/literal}
     <!-- bower:css -->
-    <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css" />
+    <link rel="stylesheet" href="/bower_components/normalize-css/normalize.css">
     <!-- endbower -->
     <!-- endbuild -->
-    
+    <!-- build:css(.tmp) styles/main.css -->
+    <link rel="stylesheet" href="styles/main.css">
+    <!-- endbuild -->
+
   </head>
   <body>
 
@@ -38,8 +40,7 @@
 </div>
 
     <script src="js/jquery.min.js"></script>
-    <script src="js/bootstrap.min.js"></script>
     <script src="js/scripts.js"></script>
   </body>
 </html>
-{/strip}
+{*{/strip}*}

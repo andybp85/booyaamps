@@ -7,9 +7,9 @@
 date_default_timezone_set('UTC');
 
 
-require __DIR__ . '/../vendor/autoload.php';
+require __DIR__ . '/../src/vendor/autoload.php';
 
-$composer = json_decode(file_get_contents(__DIR__ . '/../composer.json'));
+//$composer = json_decode(file_get_contents(__DIR__ . '/../composer.json'));
 
 $app = new \Slim\Slim(array(
       //'version'        => $composer->version,

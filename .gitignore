@@ -2,7 +2,7 @@
 composer.phar
 dist/
 .tmp/
-vendor/
+app/src/vendor/
 node_modules/
 bower_components/
 src/templates/compiled/

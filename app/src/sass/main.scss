@@ -1,0 +1,11 @@
+//@import "../../bower_components/bourbon/app/assets/stylesheets/_bourbon.scss";
+// bower:scss
+@import 'bourbon';
+@import 'neat'; 
+// endbower 
+@import "variables";
+
+.hero-unit {
+    margin: 0 auto;
+
+}

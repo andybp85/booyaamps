@@ -12,6 +12,9 @@
       "homepage": "http://andrewstanish.com"
     }
   ],
+  "config": {
+        "vendor-dir": "app/src/vendor"
+    },
   "require": {
     "php": ">=5.5",
     "smarty/smarty": "~3.1",
