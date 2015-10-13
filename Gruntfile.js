@@ -132,10 +132,14 @@ module.exports = function(grunt) {
         sass: {
             all: {
                 options: {
-                    sourceMap: true
+                    sourceMap: true,
+                    loadPath: [
+                        'bower_components/bourbon/app/assets/stylesheets',
+                        'bower_components/neat/app/assets/stylesheets'
+                    ]
                 },
                 files: {
-                    '<%= yeoman.idx %>/styles/main.css': '<%= yeoman.src %>/sass/main.scss'
+                    '<%= yeoman.idx %>/styles/main.css': '<%= yeoman.app %>/src/sass/main.scss'
                 }
             }
         },
@@ -187,9 +191,28 @@ module.exports = function(grunt) {
                     }
                 }
             }
+        },
+
+        wiredep: {
+            task: {
+                // Point to the files that should be updated when
+                // you run `grunt wiredep`
+                src: [
+                    '<%= yeoman.app %>/src/templates/*.tpl',
+                    '<%= yeoman.app %>/src/sass/main.scss'
+                ]
+
+                //options: {
+                // See wiredep's configuration documentation for the options
+                // you may pass:
+
+                // https://github.com/taptapship/wiredep#configuration
+                //}
+            }
         }
     });
 
+    grunt.loadNpmTasks('grunt-wiredep');
 
     grunt.registerTask('serve', function(target) {
         if (target === 'dist') {

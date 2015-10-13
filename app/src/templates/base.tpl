@@ -13,7 +13,7 @@
 
     {literal}<!-- build:css({.,app}) styles/vendor.css -->{/literal}
     <!-- bower:css -->
-    <link rel="stylesheet" href="/bower_components/normalize-css/normalize.css">
+    <link rel="stylesheet" href="../../../bower_components/normalize-css/normalize.css" />
     <!-- endbower -->
     <!-- endbuild -->
     <!-- build:css(.tmp) styles/main.css -->
@@ -24,23 +24,27 @@
   <body>
 
     <div class="container-fluid">
-	<div class="row">
-		<div class="col-md-3">
-		</div>
-		<div class="col-md-3">
-		</div>
-		<div class="col-md-6">
-		</div>
-	</div>
-	<div class="row">
-		<div class="col-md-12">
-            {block name="main-content"}Main{/block}
-		</div>
-	</div>
-</div>
+        <div class="row">
+            <div class="col-md-3">
+            </div>
+            <div class="col-md-3">
+            </div>
+            <div class="col-md-6">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                {block name="main-content"}Main{/block}
+            </div>
+        </div>
+    </div>
 
-    <script src="js/jquery.min.js"></script>
-    <script src="js/scripts.js"></script>
+    <!-- build:js scripts/vendor.js -->
+    <!-- bower:js -->
+    <script src="../../../bower_components/jquery/dist/jquery.js"></script>
+    <!-- endbower -->
+    <!-- endbuild -->
+
   </body>
 </html>
 {*{/strip}*}

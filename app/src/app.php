@@ -7,7 +7,6 @@
 $app->view(new \Slim\Views\Smarty());
 
 $view = $app->view();
-$view->template_dir = dirname(__FILE__) . '/templates';
 $view->parserCompileDirectory = dirname(__FILE__) . '/templates/compiled';
 $view->parserCacheDirectory = dirname(__FILE__) . '/templates/cache';
 

@@ -2,11 +2,11 @@
 composer.phar
 dist/
 .tmp/
-app/src/vendor/
 node_modules/
 bower_components/
-src/templates/compiled/
-src/templates/cache/
+app/src/vendor/
+app/src/templates/compiled/
+app/src/templates/cache/
 
 *~
 *.lock

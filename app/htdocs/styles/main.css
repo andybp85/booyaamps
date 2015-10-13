@@ -1,0 +1,12 @@
+html {
+  box-sizing: border-box; }
+
+*,
+*::after,
+*::before {
+  box-sizing: inherit; }
+
+.hero-unit {
+  margin: 0 auto; }
+
+/*# sourceMappingURL=main.css.map */
