@@ -1,0 +1,14 @@
+@include component(socialLink) {
+    float: right;
+    margin-left: 10px;
+    @include size(40px);
+
+    @include option(instagram){
+        background-image: url('../img/instagram-3-40.gif');
+    }
+
+    @include option(facebook){
+        background-image: url('../img/facebook-3-40.gif');
+    }
+
+}

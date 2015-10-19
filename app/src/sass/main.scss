@@ -1,11 +1,120 @@
 //@import "../../bower_components/bourbon/app/assets/stylesheets/_bourbon.scss";
 // bower:scss
 @import "../../../bower_components/bourbon/app/assets/stylesheets/_bourbon.scss";
+@import "base/base";
 @import "../../../bower_components/neat/app/assets/stylesheets/_neat.scss";
+@import "../../../bower_components/csstyle/csstyle.scss";
 // endbower
-@import "variables";
 
-.hero-unit {
-    margin: 0 auto;
+@import "components/socialLinks";
 
+body {
+    @include background-image(url('../img/schematic.png'));
+    @include retina-image('../img/schematic', 2570px 1126px);
+    background-color: $base-background-color;
+    background-position: 50%;
+    min-height: 100vh;
+    padding-top: 10px;
 }
+
+header {
+    @include border-top-radius(5px);
+    @include outer-container;
+    background-color: $black;
+    border-width: 5px 5px 0 5px;
+    border-style: solid; 
+    border-color: $light-gray;
+    padding: 10px;
+
+    div.logo {
+        @include span-columns(3);
+        margin-bottom: 5px;
+    }
+
+    hr {
+        @include size(100% 5px);
+        background-color: $light-gray;
+        margin-bottom: -5px;
+    }
+}
+
+nav {
+    @include shift(3);
+    @include span-columns(5);
+    font-family: $permanent-market;
+    font-size: 2.5em;
+    position: relative;
+
+    img {
+        left: 100px;
+        position: absolute;
+        top: 50px;
+        transform: rotate(25deg);
+    }
+
+    li {
+        cursor: pointer;
+    }
+
+    li[data-page="home"] {
+        @include position(absolute, 30px null null -0px);
+    }
+    li[data-page="about"] {
+        @include position(absolute, 102px null null -40px);
+    }
+    li[data-page="news"] {
+        @include position(absolute, 180px null null null);
+    }
+    li[data-page="amps"] {
+        @include position(absolute, 240px null null 110px);
+    }
+    li[data-page="mods"] {
+        @include position(absolute, 240px null null 270px);
+    }
+    li[data-page="contact"] {
+        @include position(absolute, 170px null null 350px);
+    }
+}
+
+main {
+    @include outer-container;
+    background-color: $black;
+    border-width: 0 5px 0 5px;
+    border-style: solid; 
+    border-color: $light-gray;
+    height: 100%;
+    padding: 0 10px;
+}
+
+div#footer-wapper {
+    @include position(fixed, null null 0px null);
+    background-color: $light-gray;
+    width: 100%;
+}
+
+footer {
+    @include outer-container;
+    color: $black;
+    padding: 5px 0;
+
+    aside#copyright {
+        @include span-columns(5);
+
+        span {
+            font-size: 1.5em;
+            font-family: $permanent-market;
+            line-height: 40px;
+        }
+
+        img {
+            float: left;
+            margin-right: 10px;
+        }
+    }
+
+    aside#socialLinks {
+        @include shift(5);
+        @include span-columns(2);
+    }
+}
+
