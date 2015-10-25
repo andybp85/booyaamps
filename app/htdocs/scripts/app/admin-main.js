@@ -1,16 +1,23 @@
 "use strict";
 
-require(['codemirror','codemirror/keymap/vim'], function(CodeMirror){
+require(['codemirror','codemirror/keymap/vim','nav'], function(CodeMirror){
 
-    var editer = document.getElementById('editor'),
+    var nav = require('nav'),
+        editor = document.getElementById('editor');
 
-        options = {
+    nav();
+
+    if (editor){
+        var options = {
             lineNumbers: true,
             mode: "htmlmixed",
             theme: 'solarized',
             keyMap: "vim"
         },
 
-        cm = CodeMirror.fromTextArea(editer, options);
+        cm = CodeMirror.fromTextArea(editor, options);
+    }
 
 });
+
+

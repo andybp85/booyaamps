@@ -4,6 +4,7 @@ require.config({
         "blueimp-file-upload": "../../../bower_components/blueimp-file-upload/js/jquery.fileupload",
         jquery: "../../../bower_components/jquery/dist/jquery",
         "jquery.transit": "../../../bower_components/jquery.transit/jquery.transit",
+        'nav': './app/nav'
     },
     packages: [{
         name: "codemirror",

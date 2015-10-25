@@ -28,8 +28,8 @@ $smarty->setCompileId((bool) IS_AJAX ? 'ajaxResponse' : $baseTemplate);
 // -----------------------------------------------------------------------------
 
 $app->get('/', function() use($app, $smarty) {
-   //$app->render('pages/home.tpl', array('ParentTemplate' => $smarty->compile_id . '.tpl'));
-   $app->render('admin/editor.tpl', array('ParentTemplate' => $smarty->compile_id . '.tpl'));
+   $app->render('pages/home.tpl', array('ParentTemplate' => $smarty->compile_id . '.tpl'));
+   //$app->render('admin/editor.tpl', array('ParentTemplate' => $smarty->compile_id . '.tpl'));
 })->name('home');
 
 $app->get('/about', function() use($app, $smarty) {
