@@ -8,6 +8,8 @@
                 '-moz-transform' : 'rotate('+ e.target.dataset.rotation +'deg)',
                 '-ms-transform' : 'rotate('+ e.target.dataset.rotation +'deg)',
                 'transform' : 'rotate('+ e.target.dataset.rotation +'deg)'});
+                
+        history.pushState(null, e.target.dataset.page, e.target.dataset.page);
     });
 
 

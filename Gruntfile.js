@@ -19,7 +19,9 @@ module.exports = function(grunt) {
         dist : 'dist',
         test : 'test',
         tmp  : '.tmp'
-    };
+    },
+    rewrite = require('connect-modrewrite-jgchristian');
+    //history = require('connect-history-api-fallback');
 
     grunt.initConfig({
 
@@ -174,12 +176,19 @@ module.exports = function(grunt) {
             options: {
                 port: 9000,
                 // change this to '0.0.0.0' to access the server from outside
-                hostname: '127.0.0.1'
+                hostname: 'booyaamps.com',
+                //hostname: '127.0.0.1',
+                debug: true,
             },
             livereload: {
                 options: {
-                    middleware: function (connect) {
-                        return [
+                    middleware: function (connect, options) {
+
+                        var middleware = [
+                            rewrite(['!\\.php|\\.html|\\.js|\\.css|\\.svg|\\.jp(e?)g|\\.png|\\.gif$ /index.php [QSA,L]']),
+                            //rewrite(['%{REQUEST_FILENAME} !-f ^ index.php [QSA,L]']),
+                            /*history({index: '/index.php',*/
+                                     /*verbose: true})*/,
                             lrSnippet,
                             gateway(__dirname + path.sep + config.idx, {
                                 '.php': 'php-cgi'
@@ -187,8 +196,32 @@ module.exports = function(grunt) {
                             mountFolder(connect, '<%= yeoman.tmp %>'),
                             connect().use('/bower_components', serveStatic('./bower_components')),
                             mountFolder(connect, config.idx)
-                        ];
-                    }
+                            ];
+
+                        return middleware;
+                    },
+
+                   /*     var middleware = [];*/
+
+                        /*var rules = [*/
+                            //'!\\.html|\\.js|\\.css|\\.svg|\\.jp(e?)g|\\.png|\\.gif$ /index.php'
+                        //];
+                        /*middleware.push(rewrite(rules));*/
+
+                        //middleware.push([
+                            //lrSnippet,
+                            //gateway(__dirname + path.sep + config.idx, {
+                                //'.php': 'php-cgi'
+                            //}),
+                            //mountFolder(connect, '<%= yeoman.tmp %>'),
+                            //connect().use('/bower_components', serveStatic('./bower_components')),
+                            //mountFolder(connect, config.idx)
+                        //]);
+
+                        ////grunt.log.writeln(middleware);
+
+                        //return middleware;
+                    /*}*/
                 }
             }
         },
@@ -221,6 +254,7 @@ module.exports = function(grunt) {
 
         grunt.task.run([
             'clean:server',
+            //'wiredep',
             'concurrent:server',
             'connect:livereload',
             'open:app',

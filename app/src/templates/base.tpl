@@ -41,7 +41,7 @@
         </header>
 
         <main role="main">
-            {block name="main-content"}Main{/block}
+            {block name=main-content}Main{/block}
         </main>
 
         <div id="footer-wapper">
@@ -60,6 +60,7 @@
 
         <!-- build:js scripts/vendor.js -->
         <!-- bower:js -->
+        <script src="../../../bower_components/modernizr/src/Modernizr.js"></script>
         <script src="../../../bower_components/jquery/dist/jquery.js"></script>
         <script src="../../../bower_components/jquery.transit/jquery.transit.js"></script>
         <!-- endbower -->

@@ -80,9 +80,9 @@ main {
     @include outer-container;
     background-color: $black;
     border-width: 0 5px 0 5px;
-    border-style: solid; 
+    border-style: solid;
     border-color: $light-gray;
-    height: 100%;
+    height: 58vh;
     padding: 0 10px;
 }
 
