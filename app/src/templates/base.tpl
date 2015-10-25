@@ -28,12 +28,12 @@
             <nav role="navigation">
                 <img src="img/knob.png" />
                 <ul>
-                    <li data-page="home" data-rotation="25" class="active">Home</li>
-                    <li data-page="about" data-rotation="0" >About</li>
-                    <li data-page="news" data-rotation="-25" >News</li>
-                    <li data-page="amps" data-rotation="-70" >Amps</li>
-                    <li data-page="mods" data-rotation="-120" > Mods</li>
-                    <li data-page="contact" data-rotation="-160" >Contact</li>
+                    <li data-page="/" data-rotation="25" class="active">Home</li>
+                    <li data-page="/about" data-rotation="0" >About</li>
+                    <li data-page="/news" data-rotation="-25" >News</li>
+                    <li data-page="/amps" data-rotation="-70" >Amps</li>
+                    <li data-page="/mods" data-rotation="-120" > Mods</li>
+                    <li data-page="/contact" data-rotation="-160" >Contact</li>
                 </ul>
             </nav>
 
@@ -41,7 +41,9 @@
         </header>
 
         <main role="main">
+            <div>
             {block name=main-content}Main{/block}
+            </div>
         </main>
 
         <div id="footer-wapper">
@@ -60,7 +62,6 @@
 
         <!-- build:js scripts/vendor.js -->
         <!-- bower:js -->
-        <script src="../../../bower_components/modernizr/src/Modernizr.js"></script>
         <script src="../../../bower_components/jquery/dist/jquery.js"></script>
         <script src="../../../bower_components/jquery.transit/jquery.transit.js"></script>
         <!-- endbower -->

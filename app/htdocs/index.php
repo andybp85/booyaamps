@@ -19,9 +19,6 @@ $app = new \Slim\Slim(array(
     )
 );
 
-
-var_dump($_GET);
-
 require_once __DIR__ . '/../src/app.php';
 
 $app->run();

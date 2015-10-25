@@ -265,26 +265,26 @@ nav {
     transform: rotate(25deg); }
   nav li {
     cursor: pointer; }
-  nav li[data-page="home"] {
+  nav li[data-page="/"] {
     position: absolute;
     top: 30px;
     left: 0px; }
-  nav li[data-page="about"] {
+  nav li[data-page="/about"] {
     position: absolute;
     top: 102px;
     left: -40px; }
-  nav li[data-page="news"] {
+  nav li[data-page="/news"] {
     position: absolute;
     top: 180px; }
-  nav li[data-page="amps"] {
+  nav li[data-page="/amps"] {
     position: absolute;
     top: 240px;
     left: 110px; }
-  nav li[data-page="mods"] {
+  nav li[data-page="/mods"] {
     position: absolute;
     top: 240px;
     left: 270px; }
-  nav li[data-page="contact"] {
+  nav li[data-page="/contact"] {
     position: absolute;
     top: 170px;
     left: 350px; }
@@ -298,11 +298,16 @@ main {
   border-style: solid;
   border-color: #ccc;
   height: 58vh;
-  padding: 0 10px; }
+  position: relative; }
   main::after {
     clear: both;
     content: "";
     display: table; }
+  main > div {
+    padding: 0 10px;
+    position: absolute;
+    right: 0px;
+    width: 100%; }
 
 div#footer-wapper {
   position: fixed;

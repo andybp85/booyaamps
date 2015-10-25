@@ -56,22 +56,22 @@ nav {
         cursor: pointer;
     }
 
-    li[data-page="home"] {
+    li[data-page="/"] {
         @include position(absolute, 30px null null -0px);
     }
-    li[data-page="about"] {
+    li[data-page="/about"] {
         @include position(absolute, 102px null null -40px);
     }
-    li[data-page="news"] {
+    li[data-page="/news"] {
         @include position(absolute, 180px null null null);
     }
-    li[data-page="amps"] {
+    li[data-page="/amps"] {
         @include position(absolute, 240px null null 110px);
     }
-    li[data-page="mods"] {
+    li[data-page="/mods"] {
         @include position(absolute, 240px null null 270px);
     }
-    li[data-page="contact"] {
+    li[data-page="/contact"] {
         @include position(absolute, 170px null null 350px);
     }
 }
@@ -83,7 +83,14 @@ main {
     border-style: solid;
     border-color: $light-gray;
     height: 58vh;
-    padding: 0 10px;
+    position: relative;
+
+    > div {
+        padding: 0 10px;
+        position: absolute;
+        right: 0px;
+        width: 100%;
+    }
 }
 
 div#footer-wapper {
