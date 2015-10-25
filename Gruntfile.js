@@ -21,7 +21,6 @@ module.exports = function(grunt) {
         tmp  : '.tmp'
     },
     rewrite = require('connect-modrewrite-jgchristian');
-    //history = require('connect-history-api-fallback');
 
     grunt.initConfig({
 
@@ -105,7 +104,7 @@ module.exports = function(grunt) {
 
         watch: {
             javascript: {
-                files: ['<%= yeoman.app %>/scripts/**/*.js'],
+                files: ['<%= yeoman.app %>/scripts/{,*/}*.js'],
                 tasks: ['jshint']
             },
             sass: {
@@ -141,7 +140,8 @@ module.exports = function(grunt) {
                     ]
                 },
                 files: {
-                    '<%= yeoman.idx %>/styles/main.css': '<%= yeoman.app %>/src/sass/main.scss'
+                    '<%= yeoman.idx %>/styles/main.css': '<%= yeoman.app %>/src/sass/main.scss',
+                    '<%= yeoman.idx %>/styles/admin.css': '<%= yeoman.app %>/src/sass/admin.scss'
                 }
             }
         },
@@ -186,9 +186,6 @@ module.exports = function(grunt) {
 
                         var middleware = [
                             rewrite(['!\\.php|\\.html|\\.js|\\.css|\\.svg|\\.jp(e?)g|\\.png|\\.gif$ /index.php [QSA,L]']),
-                            //rewrite(['%{REQUEST_FILENAME} !-f ^ index.php [QSA,L]']),
-                            /*history({index: '/index.php',*/
-                                     /*verbose: true})*/,
                             lrSnippet,
                             gateway(__dirname + path.sep + config.idx, {
                                 '.php': 'php-cgi'
@@ -228,11 +225,14 @@ module.exports = function(grunt) {
 
         wiredep: {
             task: {
-                // Point to the files that should be updated when
-                // you run `grunt wiredep`
                 src: [
-                    '<%= yeoman.app %>/src/templates/*.tpl',
+                    '<%= yeoman.app %>/src/templates/base.tpl',
+                    '<%= yeoman.app %>/src/templates/pages/*.tpl',
                     '<%= yeoman.app %>/src/sass/main.scss'
+                ],
+                exclude: [
+                    'bower_components/codemirror/',
+                    'bower_components/solarized'
                 ]
 
                 //options: {
@@ -242,8 +242,38 @@ module.exports = function(grunt) {
                 // https://github.com/taptapship/wiredep#configuration
                 //}
             }
+        },
+        //wiredepAdmin: {
+            //task: {
+                //src: [
+                    //'<%= yeoman.app %>/src/templates/admin-base.tpl',
+                    //'<%= yeoman.app %>/src/templates/admin/*.tpl',
+                    //'<%= yeoman.app %>/src/sass/admin.scss'
+                //],
+                //exclude: [
+                    //'bower_components/jquery.transit/',
+                //]
+
+                ////options: {
+                //// See wiredep's configuration documentation for the options
+                //// you may pass:
+
+                //// https://github.com/taptapship/wiredep#configuration
+                ////}
+            //}
+        /*},*/
+        bowerRequirejs: {
+            all: {
+                rjsConfig: '<%= yeoman.idx %>/scripts/common.js',
+                options: {
+                    'exclude-dev': true,
+                    exclude: ['modernizr']
+                }
+            }
         }
     });
+
+    grunt.loadNpmTasks('grunt-bower-requirejs');
 
     grunt.loadNpmTasks('grunt-wiredep');
 

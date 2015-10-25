@@ -1,0 +1,44 @@
+// bower:scss
+@import "../../../bower_components/bourbon/app/assets/stylesheets/_bourbon.scss";
+@import "base/base";
+@import "../../../bower_components/neat/app/assets/stylesheets/_neat.scss";
+@import "../../../bower_components/solarized/scss/solarized-classes.scss";
+// endbower
+
+body {
+    background-color: $solarized-b-7;
+    color: $solarized-03;
+    padding-top: 10px;
+}
+
+div#wrapper {
+    @include outer-container;
+    padding: 10px;
+}
+
+header {
+    @include span-columns(2);
+}
+
+nav {
+    font-size: 2em;
+
+    li {
+        @include border-top-radius(5px);
+        @include border-bottom-radius(5px);
+        background-color: $solarized-03;
+        color: $solarized-3;
+        cursor: pointer;
+        margin-top: 5px;
+        padding-left: 10px;
+    }
+}
+
+main {
+    @include span-columns(10);
+
+    a {
+        @include shift(11);
+        font-size: .7em;
+    }
+}

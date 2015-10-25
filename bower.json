@@ -7,6 +7,9 @@
     "neat": "~1.7.2",
     "csstyle": "~1.5.0",
     "jquery.transit": "~0.9.12",
-    "modernizr": "~3.1.0"
+    "modernizr": "~3.1.0",
+    "solarized": "~0.1.2",
+    "blueimp-file-upload": "jquery-file-upload#~9.11.2",
+    "codemirror": "~5.8.0"
   }
 }

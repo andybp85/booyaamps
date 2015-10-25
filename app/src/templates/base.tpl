@@ -60,13 +60,7 @@
             </footer>
         </div>
 
-        <!-- build:js scripts/vendor.js -->
-        <!-- bower:js -->
-        <script src="../../../bower_components/jquery/dist/jquery.js"></script>
-        <script src="../../../bower_components/jquery.transit/jquery.transit.js"></script>
-        <!-- endbower -->
-        <script src="scripts/nav.js"></script>
-        <!-- endbuild -->
+        <script data-main="scripts/pages" src="scripts/require.js"></script>
 
     </body>
 </html>
