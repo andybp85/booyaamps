@@ -19,3 +19,4 @@ Thumbs.db
 .env
 
 app/src/autoload.php
+.env
