@@ -60,7 +60,11 @@
             </footer>
         </div>
 
-        <script data-main="scripts/pages" src="scripts/require.js"></script>
+        <script
+            data-module="scripts/modules/main.js"
+            data-main="scripts/common.js"
+            src="scripts/require.js">
+        </script>
 
     </body>
 </html>

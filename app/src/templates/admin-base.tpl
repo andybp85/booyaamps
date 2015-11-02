@@ -47,7 +47,7 @@
 
         </div>
 
-        <script data-main="scripts/admin" src="scripts/require.js"></script>
+        {block name=scripts}{/block}
 
     </body>
 </html>

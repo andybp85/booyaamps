@@ -42,3 +42,8 @@ main {
         font-size: .7em;
     }
 }
+
+
+form.galleryFrom {
+    @include span-columns(6);
+}

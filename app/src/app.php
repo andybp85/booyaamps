@@ -3,7 +3,7 @@
 // Smarty setup
 // -----------------------------------------------------------------------------
 
-// Setup our renderer 
+// Setup our renderer
 $app->view(new \Slim\Views\Smarty());
 
 $view = $app->view();
@@ -14,9 +14,9 @@ $view->parserExtensions = array(
 );
 
 // figure out which main template to use
-define('IS_AJAX', (bool) (isset($_SERVER['HTTP_X_REQUESTED_WITH']) 
-                        && !empty($_SERVER['HTTP_X_REQUESTED_WITH']) 
-                        && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest')); 
+define('IS_AJAX', (bool) (isset($_SERVER['HTTP_X_REQUESTED_WITH'])
+                        && !empty($_SERVER['HTTP_X_REQUESTED_WITH'])
+                        && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest'));
 
 $baseTemplate = (strpos($_SERVER["REQUEST_URI"], 'admin') !== false ? 'admin-base' : 'base');
 
@@ -61,43 +61,53 @@ $app->get('/admin', function() use($app, $smarty) {
    $app->render('admin/editor.tpl', array('ParentTemplate' => $smarty->compile_id . '.tpl'));
 })->name('admin');
 
-$app->get('/admin/login', function() use($app, $smarty) {
-   $app->render('admin/editor.tpl', array('ParentTemplate' => $smarty->compile_id . '.tpl'));
-})->name('admin');
-
 $app->get('/admin/editor', function() use($app, $smarty) {
    $app->render('admin/editor.tpl', array('ParentTemplate' => $smarty->compile_id . '.tpl'));
-})->name('admin');
+})->name('editor');
 
 $app->get('/admin/amps', function() use($app, $smarty) {
    $app->render('admin/editor.tpl', array('ParentTemplate' => $smarty->compile_id . '.tpl'));
-})->name('admin');
+})->name('ampsAdmin');
 
 $app->get('/admin/mods', function() use($app, $smarty) {
    $app->render('admin/editor.tpl', array('ParentTemplate' => $smarty->compile_id . '.tpl'));
-})->name('admin');
+})->name('modsAdmin');
 
 
-// AJAX Routes
+// Data Routes
 // -----------------------------------------------------------------------------
 
-$app->get('/ajax', function() {
-    try {
+$app->get('/galleries/:page', function($page) {
+    if (IS_AJAX) {
         $db = getConnection();
-        $db = null;
-        echo 'success';
-    } catch(PDOException $e) {
-        echo '{"error":{"text":'. $e->getMessage() .'}}';
+        echo json_encode(getPage($db, $page));
     }
-    
-})->name('ajax');
+})->name('galleries');
 
-// Functions
+$app->post('/admin/galleryEntry', function() use($app) {
+    $post = $app->request->post();
+    $db = getConnection();
+    $db->transactional(function($db, $post) {
+        $db->insert($post('table'), $post('data'));
+    });
+});
+
+$app->delete('/admin/galleryEntry/:id', function($id) {
+    $db = getConnection();
+    $db->delete('entries', array('id' => $id));
+});
+
+$app->delete('/admin/image/:id', function($id) {
+    $db = getConnection();
+    $db->delete('media', array('id' => $id));
+});
+
+
+// Database Access Layer
 // -----------------------------------------------------------------------------
 
 function getConnection() {
-    require 'vendor/autoload.php';
-    
+
     $dotenv = new Dotenv\Dotenv(__dir__);
     $dotenv->load();
 
@@ -107,7 +117,7 @@ function getConnection() {
         'password' => $_ENV['BOOYA_DB_PASSWD'],
         'host'     => $_ENV['BOOYA_DB_HOST'],
         'driver'   => 'pdo_mysql'
-    ); 
+    );
 
     $config = new \Doctrine\DBAL\Configuration();
 
@@ -115,5 +125,18 @@ function getConnection() {
 
 }
 
+function getPage($db, $page){
+    return $db->fetchAll('SELECT * FROM entries LEFT JOIN media ON entries.id=media.entryId WHERE entries.type = ?', array($page));
+}
 
+/*function addEntry($db, $type, $title, $desc) {*/
+    //return $db->insert('entries', array('type' => $type, 'title' => $title, 'description' => $desc));
+//}
 
+//function addMedia($db, $type, $path, $entryId) {
+    //return $db->insert('entries', array('type' => $type, 'path' => $path, 'entryId' => $entryId));
+//}
+
+//function delete($db, $table, $id) {
+    //
+/*}*/
