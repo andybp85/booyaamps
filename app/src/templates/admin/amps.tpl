@@ -5,16 +5,15 @@
         <option value="new">New</option>
     </select>
 
-    <form class="galleryFrom">
+    <form class="galleryFrom" data-bind="submit: save">
 
-        <label for="entry[title]">Title</label>
-        <input type="text" name="entry[title]">
+        <label for="title">Title</label>
+        <input type="text" name="title" data-bind="value: title" >
 
-        <label for="entry[description]">Description</label>
-        <input type="text" name="entry[description]">
+        <label for="desc">Description</label>
+        <input type="text" name="desc" data-bind="value: desc" >
 
 
-        <input type="hidden" name="table" value="amps">
         <input type="submit">
 
     </form>

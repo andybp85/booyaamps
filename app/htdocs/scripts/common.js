@@ -1,18 +1,19 @@
 "use strict";
 
 require.config({
-    shim: {},
     paths: {
-        "blueimp-file-upload": "../../../bower_components/blueimp-file-upload/js/jquery.fileupload",
-        jquery: "../../../bower_components/jquery/dist/jquery",
-        "jquery.transit": "../../../bower_components/jquery.transit/jquery.transit",
-        'knockout': '../../../bower_components/knockout/dist/knockout',
+        "blueimp-file-upload": "../bower_components/blueimp-file-upload/js/jquery.fileupload",
+        'jquery': "../bower_components/jquery/dist/jquery",
+        "jquery.transit": "../bower_components/jquery.transit/jquery.transit",
+        'knockout': '../bower_components/knockout/dist/knockout',
+        'mapping': '../bower_components/knockout.mapping/knockout.mapping',
         // user defined
         'nav': './modules/nav'
     },
+    shim: {},
     packages: [{
         name: "codemirror",
-        location: "../../../bower_components/codemirror",
+        location: "../bower_components/codemirror",
         main: "lib/codemirror"
     }]
 });

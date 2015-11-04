@@ -1,13 +1,8 @@
 'use strict';
 
 var LIVERELOAD_PORT = 35729,
-    lrSnippet = require('connect-livereload')({port: LIVERELOAD_PORT}),
-    gateway = require('gateway'),
-    serveStatic = require('serve-static'),
-    path = require('path'),
-    mountFolder = function (connect, dir) {
-        return serveStatic(require('path').resolve(dir));
-    };
+    lrSnippet = require('connect-livereload')({port: LIVERELOAD_PORT});
+
 
 module.exports = function(grunt) {
     require('time-grunt')(grunt);
@@ -112,7 +107,7 @@ module.exports = function(grunt) {
                 tasks: ['sass']
             },
             bower: {
-                files: ['/bower_components/**/*.js'],
+                files: ['/app/htdocs/bower_components/**/*.js'],
                 tasks: ['bower']
             },
             livereload: {
@@ -135,8 +130,8 @@ module.exports = function(grunt) {
                 options: {
                     sourceMap: true,
                     loadPath: [
-                        'bower_components/bourbon/app/assets/stylesheets',
-                        'bower_components/neat/app/assets/stylesheets'
+                        'app/htdocs/bower_components/bourbon/app/assets/stylesheets',
+                        'app/htdocs/bower_components/neat/app/assets/stylesheets'
                     ]
                 },
                 files: {
@@ -160,65 +155,41 @@ module.exports = function(grunt) {
             ]
         },
 
-        open: {
-            app: {
-                path: 'http://<%= connect.options.hostname %>:<%= connect.options.port %>/'
-            },
-            dist: {
-                path: 'http://<%= connect.options.hostname %>:<%= connect.options.port %>/'
-            },
-            report: {
-                path: 'docs/complexity/index.html'
-            }
-        },
+        /*open: {*/
+            //app: {
+                //path: 'http://<%= php.options.hostname %>:<%= php.options.port %>/'
+            //},
+            //dist: {
+                //path: 'http://<%= php.options.hostname %>:<%= php.options.port %>/'
+            //},
+            //report: {
+                //path: 'docs/complexity/index.html'
+            //}
+        /*},*/
 
-        connect: {
+        php: {
             options: {
                 port: 9000,
                 // change this to '0.0.0.0' to access the server from outside
                 hostname: 'booyaamps.com',
                 //hostname: '127.0.0.1',
                 debug: true,
+                keepalive: true,
+                base: config.idx,
+                open: true
             },
             livereload: {
                 options: {
-                    middleware: function (connect, options) {
+                    middleware: function (php, options) {
 
                         var middleware = [
                             rewrite(['!\\.php|\\.html|\\.js|\\.css|\\.svg|\\.jp(e?)g|\\.png|\\.gif$ /index.php [QSA,L]']),
-                            lrSnippet,
-                            gateway(__dirname + path.sep + config.idx, {
-                                '.php': 'php-cgi'
-                            }),
-                            mountFolder(connect, '<%= yeoman.tmp %>'),
-                            connect().use('/bower_components', serveStatic('./bower_components')),
-                            mountFolder(connect, config.idx)
+                            lrSnippet
                             ];
 
                         return middleware;
                     },
 
-                   /*     var middleware = [];*/
-
-                        /*var rules = [*/
-                            //'!\\.html|\\.js|\\.css|\\.svg|\\.jp(e?)g|\\.png|\\.gif$ /index.php'
-                        //];
-                        /*middleware.push(rewrite(rules));*/
-
-                        //middleware.push([
-                            //lrSnippet,
-                            //gateway(__dirname + path.sep + config.idx, {
-                                //'.php': 'php-cgi'
-                            //}),
-                            //mountFolder(connect, '<%= yeoman.tmp %>'),
-                            //connect().use('/bower_components', serveStatic('./bower_components')),
-                            //mountFolder(connect, config.idx)
-                        //]);
-
-                        ////grunt.log.writeln(middleware);
-
-                        //return middleware;
-                    /*}*/
                 }
             }
         },
@@ -231,8 +202,8 @@ module.exports = function(grunt) {
                     '<%= yeoman.app %>/src/sass/main.scss'
                 ],
                 exclude: [
-                    'bower_components/codemirror/',
-                    'bower_components/solarized'
+                    'app/htdocs/bower_components/codemirror/',
+                    'app/htdocs/bower_components/solarized'
                 ]
 
                 //options: {
@@ -243,25 +214,7 @@ module.exports = function(grunt) {
                 //}
             }
         },
-        //wiredepAdmin: {
-            //task: {
-                //src: [
-                    //'<%= yeoman.app %>/src/templates/admin-base.tpl',
-                    //'<%= yeoman.app %>/src/templates/admin/*.tpl',
-                    //'<%= yeoman.app %>/src/sass/admin.scss'
-                //],
-                //exclude: [
-                    //'bower_components/jquery.transit/',
-                //]
 
-                ////options: {
-                //// See wiredep's configuration documentation for the options
-                //// you may pass:
-
-                //// https://github.com/taptapship/wiredep#configuration
-                ////}
-            //}
-        /*},*/
         bowerRequirejs: {
             all: {
                 rjsConfig: '<%= yeoman.idx %>/scripts/common.js',
@@ -279,15 +232,15 @@ module.exports = function(grunt) {
 
     grunt.registerTask('serve', function(target) {
         if (target === 'dist') {
-            return grunt.task.run(['build', 'open:dist', 'connect:dist:keepalive']);
+            return grunt.task.run(['build', 'open:dist', 'php:dist:keepalive']);
         }
 
         grunt.task.run([
             'clean:server',
             //'wiredep',
             'concurrent:server',
-            'connect:livereload',
-            'open:app',
+            'php:livereload',
+            //'open:app',
             'watch'
         ]);
     });

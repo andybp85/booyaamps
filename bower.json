@@ -11,6 +11,7 @@
     "solarized": "~0.1.2",
     "blueimp-file-upload": "jquery-file-upload#~9.11.2",
     "codemirror": "~5.8.0",
-    "knockout": "~3.3.0"
+    "knockout": "~3.3.0",
+    "knockout.mapping": "git://github.com/SteveSanderson/knockout.mapping#~2.4.1"
   }
 }
