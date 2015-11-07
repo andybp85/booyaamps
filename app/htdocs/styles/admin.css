@@ -341,12 +341,16 @@ main {
     margin-left: 93.8278472981%;
     font-size: .7em; }
 
-form.galleryFrom {
+form.galleryForm {
   float: left;
   display: block;
   margin-right: 2.3576515979%;
   width: 48.821174201%; }
-  form.galleryFrom:last-child {
+  form.galleryForm:last-child {
     margin-right: 0; }
+  form.galleryForm div#success {
+    color: #859900;
+    display: none;
+    margin-top: 10px; }
 
 /*# sourceMappingURL=admin.css.map */

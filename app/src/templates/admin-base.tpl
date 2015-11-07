@@ -10,14 +10,14 @@
 
         {literal}<!-- build:css({.,app}) styles/admin-vendor.css -->{/literal}
         <!-- bower:css -->
-        <link rel="stylesheet" href="../../../bower_components/normalize-css/normalize.css" />
+        <link rel="stylesheet" href="/bower_components/normalize-css/normalize.css" />
         <!-- endbower -->
         <!-- endbuild -->
         <!-- build:css(.tmp) styles/admin-main.css -->
-        <link rel="stylesheet" href="styles/admin.css">
+        <link rel="stylesheet" href="/styles/admin.css">
         <!-- endbuild -->
-        <link rel="stylesheet" href="../../../bower_components/codemirror/lib/codemirror.css" />
-        <link rel="stylesheet" href="../../../bower_components/codemirror/theme/solarized.css" />
+        <link rel="stylesheet" href="/bower_components/codemirror/lib/codemirror.css" />
+        <link rel="stylesheet" href="/bower_components/codemirror/theme/solarized.css" />
 
 
     </head>
@@ -27,7 +27,7 @@
 
             <header role="banner">
                 <div class="logo">
-                    <img src="img/admin-logo.png" />
+                    <img src="/img/admin-logo.png" />
                 </div>
 
                 <nav role="navigation">

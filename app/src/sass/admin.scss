@@ -44,6 +44,12 @@ main {
 }
 
 
-form.galleryFrom {
+form.galleryForm {
     @include span-columns(6);
+
+    div#success {
+        color: $solarized-green;
+        display: none;
+        margin-top: 10px;
+    }
 }

@@ -14,8 +14,7 @@ module.exports = function(grunt) {
         dist : 'dist',
         test : 'test',
         tmp  : '.tmp'
-    },
-    rewrite = require('connect-modrewrite-jgchristian');
+    };
 
     grunt.initConfig({
 
@@ -118,8 +117,8 @@ module.exports = function(grunt) {
                     '<%= yeoman.app %>/{,*/}*.html',
                     '<%= yeoman.app %>/{,*/}*.php',
                     '<%= yeoman.app %>/src/templates/{,*/}*.tpl',
-                    '{<%= yeoman.tmp %>,<%= yeoman.app %>}/src/scripts/**/*.js',
-                    '{<%= yeoman.tmp %>,<%= yeoman.app %>}/src/styles/{,*/}*.css',
+                    '{<%= yeoman.tmp %>,<%= yeoman.app %>}/htdocs/scripts/**/*.js',
+                    '{<%= yeoman.tmp %>,<%= yeoman.app %>}/htdocs/styles/{,*/}*.css',
                     '<%= yeoman.app %>/images/{,*/}*.{png,jpg,jpeg,gif,webp,svg}'
                 ]
             }
@@ -173,8 +172,8 @@ module.exports = function(grunt) {
                 // change this to '0.0.0.0' to access the server from outside
                 hostname: 'booyaamps.com',
                 //hostname: '127.0.0.1',
-                debug: true,
-                keepalive: true,
+                debug: false,
+                keepalive: false,
                 base: config.idx,
                 open: true
             },
@@ -183,7 +182,6 @@ module.exports = function(grunt) {
                     middleware: function (php, options) {
 
                         var middleware = [
-                            rewrite(['!\\.php|\\.html|\\.js|\\.css|\\.svg|\\.jp(e?)g|\\.png|\\.gif$ /index.php [QSA,L]']),
                             lrSnippet
                             ];
 
@@ -191,7 +189,7 @@ module.exports = function(grunt) {
                     },
 
                 }
-            }
+            },
         },
 
         wiredep: {

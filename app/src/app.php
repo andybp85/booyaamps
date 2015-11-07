@@ -27,85 +27,87 @@ $smarty->setCompileId((bool) IS_AJAX ? 'ajaxResponse' : $baseTemplate);
 // -----------------------------------------------------------------------------
 
 $app->get('/', function() use($app, $smarty) {
-   //$app->render('pages/home.tpl', array('ParentTemplate' => $smarty->compile_id . '.tpl'));
-   $app->render('admin/amps.tpl', array('ParentTemplate' => $smarty->compile_id . '.tpl'));
+   $app->render('pages/home.tpl', array('ParentTemplate' => $smarty->compile_id . '.tpl'));
 })->name('home');
 
 $app->get('/about', function() use($app, $smarty) {
    $app->render('pages/about.tpl', array('ParentTemplate' => $smarty->compile_id . '.tpl'));
 })->name('about');
 
-/*$app->get('/news', function() use($app, $smarty) {*/
-   //$app->render('pages/news.tpl', array('ParentTemplate' => $smarty->compile_id . '.tpl'));
-//})->name('news');
+$app->get('/news', function() use($app, $smarty) {
+   $app->render('pages/news.tpl', array('ParentTemplate' => $smarty->compile_id . '.tpl'));
+})->name('news');
 
-//$app->get('/amps', function() use($app, $smarty) {
-   //$app->render('pages/amps.tpl', array('ParentTemplate' => $smarty->compile_id . '.tpl'));
-//})->name('amps');
+$app->get('/amps', function() use($app, $smarty) {
+   $app->render('pages/amps.tpl', array('ParentTemplate' => $smarty->compile_id . '.tpl'));
+})->name('amps');
 
-//$app->get('/mods', function() use($app, $smarty) {
-   //$app->render('pages/mods.tpl', array('ParentTemplate' => $smarty->compile_id . '.tpl'));
-//})->name('mods');
+$app->get('/mods', function() use($app, $smarty) {
+   $app->render('pages/mods.tpl', array('ParentTemplate' => $smarty->compile_id . '.tpl'));
+})->name('mods');
 
-//$app->get('/contact', function() use($app, $smarty) {
-   //$app->render('pages/contact.tpl', array('ParentTemplate' => $smarty->compile_id . '.tpl'));
-/*})->name('contact');*/
+$app->get('/contact', function() use($app, $smarty) {
+   $app->render('pages/contact.tpl', array('ParentTemplate' => $smarty->compile_id . '.tpl'));
+})->name('contact');
 
 
 // Admin Routes
 // -----------------------------------------------------------------------------
 
-/*$app->get('/admin', function() use($app, $smarty) {*/
-   //$app->render('admin/editor.tpl', array('ParentTemplate' => $smarty->compile_id . '.tpl'));
-//})->name('admin');
+$app->get('/admin', function() use($app, $smarty) {
+   $app->render('admin/editor.tpl', array('ParentTemplate' => $smarty->compile_id . '.tpl'));
+})->name('admin');
 
-//$app->get('/admin/editor', function() use($app, $smarty) {
-   //$app->render('admin/editor.tpl', array('ParentTemplate' => $smarty->compile_id . '.tpl'));
-//})->name('editor');
+$app->get('/admin/editor', function() use($app, $smarty) {
+   $app->render('admin/editor.tpl', array('ParentTemplate' => $smarty->compile_id . '.tpl'));
+})->name('editor');
 
-//$app->get('/admin/amps', function() use($app, $smarty) {
-   //$app->render('admin/amps.tpl', array('ParentTemplate' => $smarty->compile_id . '.tpl'));
-//})->name('ampsAdmin');
+$app->get('/admin/amps', function() use($app, $smarty) {
+   $app->render('admin/amps.tpl', array('ParentTemplate' => $smarty->compile_id . '.tpl'));
+})->name('ampsAdmin');
 
-//$app->get('/admin/mods', function() use($app, $smarty) {
-   //$app->render('admin/editor.tpl', array('ParentTemplate' => $smarty->compile_id . '.tpl'));
-/*})->name('modsAdmin');*/
+$app->get('/admin/mods', function() use($app, $smarty) {
+   $app->render('admin/editor.tpl', array('ParentTemplate' => $smarty->compile_id . '.tpl'));
+})->name('modsAdmin');
 
 
 // Data Routes
 // -----------------------------------------------------------------------------
 
-/*$app->get('/galleries/:page', function($page) {*/
-    //if (IS_AJAX) {
-        //$db = getConnection();
-        //echo json_encode(getPage($db, $page));
-    //}
-//})->name('galleries');
+$app->get('/galleries/:page', function($page) {
+    if (IS_AJAX) {
+        $db = getConnection();
+        echo json_encode(getPage($db, $page));
+    }
+});
 
-//$app->post('/admin/galleryEntry', function() use($app) {
-    //$response = $app->response();
-    //$response->header('Access-Control-Allow-Origin', '*');
+$app->post('/admin/galleryEntry', function() use($app) {
+    $response = $app->response();
+    $response->header('Access-Control-Allow-Origin', '*');
 
-    //$post = $app->request->post();
-    //$db = getConnection();
-    //try {
-        //$db->transactional(function() use($db, $post) {
-            //$db->insert($post('table'), $post('data'));
-        //});
-    //} catch  (Exception $e) {
-        //echo $e->getMessage();
-    //}
-//});
+    $post = $app->request->post();
+    $db = getConnection();
+    try {
+        $db->transactional(function($db) use($post) {
+            if (is_numeric($post['data']['id']))
+                echo $db->update($post['table'], $post['data'], array('id' => $post['data']['id']));
+            else
+                echo $db->insert($post['table'], $post['data']);
+        });
+    } catch (Exception $e) {
+        echo $e->getMessage();
+    }
+});
 
-//$app->delete('/admin/galleryEntry/:id', function($id) {
-    //$db = getConnection();
-    //$db->delete('entries', array('id' => $id));
-//});
+$app->delete('/admin/galleryEntry/:id', function($id) {
+    $db = getConnection();
+    $db->delete('entries', array('id' => $id));
+});
 
-//$app->delete('/admin/image/:id', function($id) {
-    //$db = getConnection();
-    //$db->delete('media', array('id' => $id));
-//});
+$app->delete('/admin/image/:id', function($id) {
+    $db = getConnection();
+    $db->delete('media', array('id' => $id));
+});
 
 
 // Database Access Layer
@@ -131,7 +133,21 @@ function getConnection() {
 }
 
 function getPage($db, $page){
-    return $db->fetchAll('SELECT * FROM entries LEFT JOIN media ON entries.id=media.entryId WHERE entries.type = ?', array($page));
+    
+$query = <<<QUERY
+SELECT
+    entries.id,
+    entries.title,
+    entries.description
+FROM
+    entries
+LEFT JOIN media
+    ON entries.id=media.entryId
+WHERE
+    entries.type = ?
+QUERY;
+
+    return $db->fetchAll($query, array($page));
 }
 
 /*function addEntry($db, $type, $title, $desc) {*/
