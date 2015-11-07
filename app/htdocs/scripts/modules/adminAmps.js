@@ -1,6 +1,6 @@
 "use strict";
 
-require(['jquery', 'knockout','nav', 'picoModal'], function($, ko, nav, picoModal){
+require(['jquery', 'knockout','nav', 'picoModal', 'knockout-validation'], function($, ko, nav, picoModal, validation){
 
     nav();
 

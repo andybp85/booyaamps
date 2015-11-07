@@ -6,6 +6,7 @@ require.config({
         'jquery'              : "../bower_components/jquery/dist/jquery",
         "jquery.transit"      : "../bower_components/jquery.transit/jquery.transit",
         'knockout'            : '../bower_components/knockout/dist/knockout',
+        'knockout-validation' : '../bower_components/knockout-validation/dist/knockout.validation.min',
         'mapping'             : '../bower_components/knockout.mapping/knockout.mapping',
         'picoModal'           : '../bower_components/PicoModal/src/picoModal',
         // user defined

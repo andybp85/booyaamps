@@ -9,7 +9,7 @@
     <form class="galleryForm" data-bind="submit: save">
 
         <label for="title">Title</label>
-        <input type="text" name="title" data-bind="textInput: selectedAmp().title" >
+        <input type="text" name="title" data-bind="textInput: selectedAmp().title" required >
 
         <label for="desc">Description</label>
         <textarea type="text" name="desc" data-bind="textInput: selectedAmp().desc" ></textarea>
