@@ -37,6 +37,14 @@ nav {
 main {
     @include span-columns(10);
 
+    section {
+        @include span-columns(6);
+    }
+
+    aside {
+        @include span-columns(4);
+    }
+
     a {
         @include shift(11);
         font-size: .7em;
@@ -45,11 +53,28 @@ main {
 
 
 form.galleryForm {
-    @include span-columns(6);
+    
 
     div#success {
         color: $solarized-green;
         display: none;
         margin-top: 10px;
     }
+
+    textarea[name="desc"] {
+        height: 260px;
+    }
+
+    textarea[name="styles"] {
+        height: 0px;
+        visibility: hidden;
+    }
+
+    input[type="submit"] {
+        @include row(table);
+    }
+
+    div.imgUpload {
+         display: none;
+     }
 }

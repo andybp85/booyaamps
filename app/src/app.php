@@ -70,6 +70,10 @@ $app->get('/admin/mods', function() use($app, $smarty) {
    $app->render('admin/editor.tpl', array('ParentTemplate' => $smarty->compile_id . '.tpl'));
 })->name('modsAdmin');
 
+$app->get('/admin/media', function() use($app, $smarty) {
+   $app->render('admin/media.tpl', array('ParentTemplate' => $smarty->compile_id . '.tpl'));
+})->name('mediaAdmin');
+
 
 // Data Routes
 // -----------------------------------------------------------------------------
@@ -82,21 +86,77 @@ $app->get('/galleries/:page', function($page) {
 });
 
 $app->post('/admin/galleryEntry', function() use($app) {
-    $response = $app->response();
-    $response->header('Access-Control-Allow-Origin', '*');
-
     $post = $app->request->post();
     $db = getConnection();
     try {
         $db->transactional(function($db) use($post) {
-            if (is_numeric($post['data']['id']))
-                echo $db->update($post['table'], $post['data'], array('id' => $post['data']['id']));
-            else
-                echo $db->insert($post['table'], $post['data']);
+            echo $db->insert($post['table'], $post['data']);
         });
     } catch (Exception $e) {
         echo $e->getMessage();
     }
+});
+
+$app->post('/admin/galleryEntry/:id(/:status)', function($id, $status) use($app) {
+    $post = $app->request->post();
+    $db = getConnection();
+    if (isset($status)) {
+        try {
+            echo $db->update($post['table'], array('published' => $post['data']['status']), array('id' => $id));
+        } catch (Exception $e) {
+            echo $e->getMessage();
+        }
+    } else {
+        try {
+            $db->transactional(function($db) use($post) {
+                echo $db->update($post['table'], $post['data'], array('id' => $post['data']['id']));
+            });
+        } catch (Exception $e) {
+            echo $e->getMessage();
+        }
+    }
+});
+
+$app->post('/admin/media', function() use($app) {
+
+    require('upload.php');
+    $pathresolver = new FileUpload\PathResolver\Booya($_SERVER['DOCUMENT_ROOT'] . '/img/uploads');
+    $filesystem = new FileUpload\FileSystem\Simple();
+    $filenamegenerator = new FileUpload\FileNameGenerator\Booya();
+    $fileupload = new FileUpload\FileUpload($_FILES['files'], $_SERVER);
+
+    $fileupload->setPathResolver($pathresolver);
+    $fileupload->setFileSystem($filesystem);
+    $fileupload->setFileNameGenerator($filenamegenerator);
+
+    list($files, $headers) = $fileupload->processAll();
+
+    foreach($headers as $header => $value) {
+        header($header . ': ' . $value);
+    }
+
+    if (array_key_exists(0, $files)) {
+        try {
+
+            $db = getConnection();
+            $post = $app->request->post();
+            $path = str_replace($_SERVER['DOCUMENT_ROOT'],'',$files[0]->path);
+
+            $db->transactional(function($db) use($post, $files, $path) {
+                $db->insert('media', array('type' => $files[0]->type, 'path' => $path, 'entryId' => $post['entryID']));
+            });
+
+            unset($files[0]->path);
+
+        } catch (Exception $e) {
+            unlink($files[0]->path);
+            unset($files[0]->error_code);
+            $files[0]->error = $e->getMessage();
+        }
+    }
+
+    echo json_encode(array('files' => $files ));
+
 });
 
 $app->delete('/admin/galleryEntry/:id', function($id) {
@@ -104,7 +164,7 @@ $app->delete('/admin/galleryEntry/:id', function($id) {
     $db->delete('entries', array('id' => $id));
 });
 
-$app->delete('/admin/image/:id', function($id) {
+$app->delete('/admin/media/:id', function($id) {
     $db = getConnection();
     $db->delete('media', array('id' => $id));
 });
@@ -138,13 +198,15 @@ $query = <<<QUERY
 SELECT
     entries.id,
     entries.title,
-    entries.description
+    entries.description,
+    group_concat(media.path) as paths
 FROM
     entries
 LEFT JOIN media
     ON entries.id=media.entryId
 WHERE
     entries.type = ?
+GROUP BY entries.id
 QUERY;
 
     return $db->fetchAll($query, array($page));

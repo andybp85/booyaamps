@@ -118,7 +118,7 @@ module.exports = function(grunt) {
                     '<%= yeoman.app %>/{,*/}*.php',
                     '<%= yeoman.app %>/src/templates/{,*/}*.tpl',
                     '{<%= yeoman.tmp %>,<%= yeoman.app %>}/htdocs/scripts/**/*.js',
-                    '{<%= yeoman.tmp %>,<%= yeoman.app %>}/htdocs/styles/{,*/}*.css',
+                    '{<%= yeoman.tmp %>,<%= yeoman.app %>}/htdocs/styles/*.css',
                     '<%= yeoman.app %>/images/{,*/}*.{png,jpg,jpeg,gif,webp,svg}'
                 ]
             }

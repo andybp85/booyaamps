@@ -32,9 +32,10 @@
 
                 <nav role="navigation">
                     <ul>
-                        <li data-page="/admin/amps" >Amps</li>
-                        <li data-page="/admin/mods" >Mods</li>
-                        <li data-page="/admin/editor" >Editor</li>
+                        <li data-page="{urlFor name="ampsAdmin"}" >Amps</li>
+                        <li data-page="{urlFor name="modsAdmin"}" >Mods</li>
+                        <li data-page="{urlFor name="mediaAdmin"}" >Media</li>
+                        <li data-page="{urlFor name="editor"}" >Editor</li>
                     </ul>
                 </nav>
             </header>

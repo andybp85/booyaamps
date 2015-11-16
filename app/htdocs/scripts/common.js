@@ -2,15 +2,17 @@
 
 require.config({
     paths: {
-        "blueimp-file-upload" : "../bower_components/blueimp-file-upload/js/jquery.fileupload",
-        'jquery'              : "../bower_components/jquery/dist/jquery",
-        "jquery.transit"      : "../bower_components/jquery.transit/jquery.transit",
-        'knockout'            : '../bower_components/knockout/dist/knockout',
-        'knockout-validation' : '../bower_components/knockout-validation/dist/knockout.validation.min',
-        'mapping'             : '../bower_components/knockout.mapping/knockout.mapping',
-        'picoModal'           : '../bower_components/PicoModal/src/picoModal',
+        'jquery'                     : "../bower_components/jquery/dist/jquery",
+        "jquery.transit"             : "../bower_components/jquery.transit/jquery.transit",
+        'knockout'                   : '../bower_components/knockout/dist/knockout',
+        'knockout-validation'        : '../bower_components/knockout-validation/dist/knockout.validation.min',
+        'mapping'                    : '../bower_components/knockout.mapping/knockout.mapping',
+        'picoModal'                  : '../bower_components/PicoModal/src/picoModal',
+        "blueimp-file-upload"        : "../bower_components/blueimp-file-upload/js/jquery.fileupload",
+        "jquery.ui.widget"           : "../bower_components/blueimp-file-upload/js/vendor/jquery.ui.widget",
+        "slick-carousel"             : "../bower_components/slick-carousel/slick/slick",
         // user defined
-        'nav'                 : './modules/nav'
+        'nav'                        : './modules/nav'
     },
     shim: {},
     packages: [{
