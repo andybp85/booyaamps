@@ -18,7 +18,7 @@
         <!-- endbuild -->
         <link rel="stylesheet" href="/bower_components/codemirror/lib/codemirror.css" />
         <link rel="stylesheet" href="/bower_components/codemirror/theme/solarized.css" />
-
+        {block name=extra-css}{/block}
 
     </head>
     <body id="csstyle">

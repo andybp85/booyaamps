@@ -36,6 +36,11 @@ require(['jquery', 'knockout','nav', 'picoModal', 'knockout-validation','blueimp
                             });
         self.amps = ko.observableArray([newEntry]);
         self.selectedEntry = ko.observable(newEntry);
+        
+        /*self.selectedEntry.subscribe(function(){*/
+            //console.log('fire');
+            //$('#imgCarousel').slick();
+        /*});*/
 
 
         // Load
@@ -79,10 +84,6 @@ require(['jquery', 'knockout','nav', 'picoModal', 'knockout-validation','blueimp
             }
         });
 
-        self.selectedEntry.subscribe(function(){
-            $('#imgCarousel').slick();
-        });
-
 
         // Methods
         self.save = function(){
@@ -120,6 +121,7 @@ require(['jquery', 'knockout','nav', 'picoModal', 'knockout-validation','blueimp
             });
         };
 
+
 /*        self.pageStyles = function(){*/
 
         /*};*/
@@ -138,6 +140,22 @@ require(['jquery', 'knockout','nav', 'picoModal', 'knockout-validation','blueimp
             // Whenever the value subsequently changes, slowly fade the element in or out
             var value = valueAccessor();
             ko.unwrap(value) ? $(element).slideDown() : $(element).slideUp();
+        }
+    };
+
+    ko.bindingHandlers.slick = {
+        init: function(element) {
+        // args: element, valueAccessor, allBindings, viewModel, bindingContext
+            $(element).slick();
+        },
+        update: function(element, valueAccessor, allBindings, viewModel, bindingContext) {
+            // This will be called once when the binding is first applied to an element,
+            // and again whenever any observables/computeds that are accessed change
+            var updater = valueAccessor();
+            while ($(element).slick('getSlick').$slides.length > 0) {
+                $(element).slick('slickRemove',0);
+            };
+            $(element).slick('slickAdd',$(element).children('div.slide'));
         }
     };
 

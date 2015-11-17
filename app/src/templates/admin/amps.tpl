@@ -1,4 +1,8 @@
 {extends file="$ParentTemplate"}
+{block name=extra-css}
+<link rel="stylesheet" href="/bower_components/slick-carousel/slick/slick.css" />
+<link rel="stylesheet" href="/bower_components/slick-carousel/slick/slick-theme.css" />
+{/block}
 {block name=main-admin-content}
 
     <section role="form">
@@ -16,10 +20,10 @@
             <label for="desc">Description</label>
             <textarea type="text" name="desc" data-bind="textInput: selectedEntry().desc" ></textarea>
 
-                
-            <div class="imgCarousel" data-bind="slideVisible: selectedEntry().paths().length > 0, 
-                                                foreach: { data: selectedEntry().paths(), as: 'path' }">
-                <img data-bind="attr: { src : path } "></span>
+            <div id="imgCarousel" data-bind="slideVisible: selectedEntry().paths().length > 0,
+                                             foreach : { data : selectedEntry().paths(), as : 'path' },
+                                             slick: selectedEntry().paths()">
+                <div class="slide"><img data-bind="attr: { src : path } "></div>
             </div>
 
             <div class="imgUpload" data-bind="slideVisible: selectedEntry().id">
