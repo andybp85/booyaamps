@@ -1,6 +1,6 @@
 "use strict";
 
-require(['jquery', 'knockout','nav', 'picoModal', 'knockout-validation','blueimp-file-upload','slick-carousel'],
+require(['jquery', 'knockout','nav', 'picoModal', 'knockout-validation','blueimp-file-upload','slick-carousel','featherlight'],
         function($, ko, nav, picoModal, validation){
 
     nav();
@@ -36,13 +36,8 @@ require(['jquery', 'knockout','nav', 'picoModal', 'knockout-validation','blueimp
                             });
         self.amps = ko.observableArray([newEntry]);
         self.selectedEntry = ko.observable(newEntry);
+
         
-        /*self.selectedEntry.subscribe(function(){*/
-            //console.log('fire');
-            //$('#imgCarousel').slick();
-        /*});*/
-
-
         // Load
         $.getJSON("/galleries/" + page, function(data) {
             $.map(data, function(item) { self.amps.push(new Entry(item)); });
@@ -146,7 +141,12 @@ require(['jquery', 'knockout','nav', 'picoModal', 'knockout-validation','blueimp
     ko.bindingHandlers.slick = {
         init: function(element) {
         // args: element, valueAccessor, allBindings, viewModel, bindingContext
-            $(element).slick();
+            $(element).slick({
+                infinite: true,
+                lazyLoad: 'ondemand',
+                slidesToShow: 2,
+                slidesToScroll: 1
+            });
         },
         update: function(element, valueAccessor, allBindings, viewModel, bindingContext) {
             // This will be called once when the binding is first applied to an element,

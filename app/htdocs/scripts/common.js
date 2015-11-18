@@ -11,10 +11,15 @@ require.config({
         "blueimp-file-upload"        : "../bower_components/blueimp-file-upload/js/jquery.fileupload",
         "jquery.ui.widget"           : "../bower_components/blueimp-file-upload/js/vendor/jquery.ui.widget",
         "slick-carousel"             : "../bower_components/slick-carousel/slick/slick",
+        "featherlight"               : "../bower_components/featherlight/src/featherlight",
         // user defined
         'nav'                        : './modules/nav'
     },
-    shim: {},
+    shim: {
+        'featherlight' : {
+            deps : ['jquery']
+        }
+    },
     packages: [{
         name     : "codemirror",
         location : "../bower_components/codemirror",

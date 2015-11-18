@@ -2,6 +2,7 @@
 {block name=extra-css}
 <link rel="stylesheet" href="/bower_components/slick-carousel/slick/slick.css" />
 <link rel="stylesheet" href="/bower_components/slick-carousel/slick/slick-theme.css" />
+<link rel="stylesheet" href="/bower_components/featherlight/src/featherlight.css" />
 {/block}
 {block name=main-admin-content}
 
@@ -23,7 +24,11 @@
             <div id="imgCarousel" data-bind="slideVisible: selectedEntry().paths().length > 0,
                                              foreach : { data : selectedEntry().paths(), as : 'path' },
                                              slick: selectedEntry().paths()">
-                <div class="slide"><img data-bind="attr: { src : path } "></div>
+                <div class="slide">
+                    <a href="#" data-bind="attr: { 'data-featherlight' : path }">
+                        <img data-bind="attr: { 'data-lazy' : path } ">
+                    </a>
+                </div>
             </div>
 
             <div class="imgUpload" data-bind="slideVisible: selectedEntry().id">
