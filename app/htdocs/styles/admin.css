@@ -355,11 +355,6 @@ main {
     margin-left: 93.8278472981%;
     font-size: .7em; }
 
-form.galleryForm div#success {
-  color: #859900;
-  display: none;
-  margin-top: 10px; }
-
 form.galleryForm textarea[name="desc"] {
   height: 260px; }
 
@@ -374,5 +369,10 @@ form.galleryForm input[type="submit"] {
 
 form.galleryForm div.imgUpload {
   display: none; }
+
+div.success {
+  color: #859900;
+  display: none;
+  margin-top: 10px; }
 
 /*# sourceMappingURL=admin.css.map */

@@ -79,6 +79,9 @@ class Booya implements PathResolver {
    * @param string $main_path Where files should be stored
    */
   public function __construct($main_path) {
+    if (!file_exists($main_path)) {
+        mkdir($main_path, 0755, true);
+    }
     $this->main_path = $main_path;
   }
 
@@ -102,3 +105,19 @@ class Booya implements PathResolver {
 }
 
 } // END namespace FileUpload\PathResolver
+
+
+namespace FileUpload {
+
+class Booya extends FileUpload {
+
+    public function getError(){
+        return $this->upload['error'][0];
+    }
+
+    public function getErrorMessage() {
+        return $this->messages[$this->upload['error'][0]];
+    }
+
+}
+} // END namespace FileUpload

@@ -1,7 +1,6 @@
-"use strict";
-
-require(['jquery', 'knockout','nav', 'picoModal', 'knockout-validation','blueimp-file-upload','slick-carousel','featherlight'],
+require(['jquery','knockout','nav','picoModal','knockout-validation','blueimp-file-upload','slick-carousel','featherlight'],
         function($, ko, nav, picoModal, validation){
+        'use strict';
 
     nav();
 
@@ -11,14 +10,15 @@ require(['jquery', 'knockout','nav', 'picoModal', 'knockout-validation','blueimp
         this.id = ko.observable(data.id);
         this.title = ko.observable(data.title);
         this.desc = ko.observable(data.description);
-        this.published = ko.observable(data.published);
-        this.paths = ko.observableArray([]);
+        this.publish = ko.observable(data.publish);
+        this.media = ko.observableArray([]);
         this.type = page;
 
-        if (data.paths) {
+        if (data.media) {
             var that = this;
-            data.paths.split(',').forEach(function(path){
-                that.paths.push(path);
+            data.media.forEach(function(m){
+                that.media.push(m);
+                //console.log(m));
             });
         }
     }
@@ -31,17 +31,16 @@ require(['jquery', 'knockout','nav', 'picoModal', 'knockout-validation','blueimp
                                 'id'         : null,
                                 'title'      : '',
                                 'desc'       : '',
-                                'paths'      : null,
+                                'publish'  : false,
+                                'media'      : null,
                                 'pageStyles' : null
                             });
         self.amps = ko.observableArray([newEntry]);
         self.selectedEntry = ko.observable(newEntry);
 
-        
         // Load
         $.getJSON("/galleries/" + page, function(data) {
             $.map(data, function(item) { self.amps.push(new Entry(item)); });
-            ;
         });
 
         $('#fileupload').fileupload({
@@ -67,50 +66,57 @@ require(['jquery', 'knockout','nav', 'picoModal', 'knockout-validation','blueimp
                 );
             },
             fail: function (e, data) {
-                data.context.text('Upload failed: ' + data.errorThrown);
+                data.context.text('Upload failed: ' + data.jqXHR.responseText);
             },
             done: function (e, data) {
-                if (data.result.files[0].error !== 0) {
-                    data.context.text('Upload failed: ' + data.result.files[0].error);
-                } else {
+                console.log();
+                $.getJSON('/admin/getMedia/' + data.result.files[0].id, function(res){
+                    self.selectedEntry().media.push( res.pop() );
+                    $('div#imgCarousel').slick('slickAdd',$('div#imgCarousel').children('.slide'));
                     data.context.text('Upload finished.');
-                }
-
+                    $('div#imgCarousel').slick('slickGoTo', $('div#imgCarousel').slick('getSlick').$slides.length - 1);
+                });
             }
         });
 
-
         // Methods
+        self.deleteFile = function(file, e){
+            $.ajax({
+                url: '/admin/media/' + file.id,
+                type: 'DELETE',
+                data: { "path" : file.path }
+            }).done(function(res) {
+                $('div#imgCarousel').slick('slickRemove',e.target.parentElement.dataset.slickIndex);
+                self.selectedEntry().media.remove(file);
+            }).fail(function(data) {
+                picoModal("Error: " + data.responseText).show();
+            });
+        };
+
         self.save = function(){
             var postData = {'table' : "entries",
                             'data'  : {
                                 'type'        : page,
                                 'title'       : self.selectedEntry().title,
                                 'description' : self.selectedEntry().desc,
-                                'pageStyles'  : self.selectedEntry().pageStyles,
-                                'published'   : self.selectedEntry().published
+                                'pageStyles'  : self.selectedEntry().pageStyles
                                }
-                            };
+                            },
+                url = ( self.selectedEntry().id() === null ? '/admin/galleryEntry' : '/admin/galleryEntry/' + self.selectedEntry().id());
 
-            $.post('/admin/galleryEntry/' + self.selectedEntry().id(), postData, function(res) {
-                if (res === '1') {
-                   $('#success').fadeIn().delay(5000).fadeOut();
-                } else {
-                    picoModal("Error: " + res).show();
-                }
+            $.post(url, postData, function(res) {
+                $($(e).children('.success')[0]).fadeIn().delay(5000).fadeOut();
             }).fail(function(data){
-                    console.log(data);
                 picoModal("Error: " + data.status).show();
             });
         };
 
-        self.updateStatus = function(){
-            $.post('/admin/galleryEntry/', postData, function(res) {
-                if (res === '1') {
-                   $('#success').fadeIn().delay(5000).fadeOut();
-                } else {
-                    picoModal("Error: " + res).show();
-                }
+        self.updateStatus = function(e){
+            var postData = {
+                "table": "entries"
+            };
+            $.post('/admin/galleryEntry/' + self.selectedEntry().id() + '/' + $(e).children('[name=publish]')[0].value, postData, function(res) {
+                $($(e).children('.success')[0]).fadeIn().delay(5000).fadeOut();
             }).fail(function(data){
                 picoModal("Error: " + data.status).show();
             });
@@ -122,7 +128,7 @@ require(['jquery', 'knockout','nav', 'picoModal', 'knockout-validation','blueimp
         /*};*/
 
 
-    }
+    } //end ViewModel
 
     // custom bindings
     ko.bindingHandlers.slideVisible = {
@@ -144,7 +150,7 @@ require(['jquery', 'knockout','nav', 'picoModal', 'knockout-validation','blueimp
             $(element).slick({
                 infinite: true,
                 lazyLoad: 'ondemand',
-                slidesToShow: 2,
+                slidesToShow: 3,
                 slidesToScroll: 1
             });
         },
@@ -154,7 +160,7 @@ require(['jquery', 'knockout','nav', 'picoModal', 'knockout-validation','blueimp
             var updater = valueAccessor();
             while ($(element).slick('getSlick').$slides.length > 0) {
                 $(element).slick('slickRemove',0);
-            };
+            }
             $(element).slick('slickAdd',$(element).children('div.slide'));
         }
     };

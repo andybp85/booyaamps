@@ -53,13 +53,6 @@ main {
 
 
 form.galleryForm {
-    
-
-    div#success {
-        color: $solarized-green;
-        display: none;
-        margin-top: 10px;
-    }
 
     textarea[name="desc"] {
         height: 260px;
@@ -77,4 +70,10 @@ form.galleryForm {
     div.imgUpload {
          display: none;
      }
+}
+
+div.success {
+    color: $solarized-green;
+    display: none;
+    margin-top: 10px;
 }

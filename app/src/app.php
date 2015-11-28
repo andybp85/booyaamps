@@ -78,13 +78,51 @@ $app->get('/admin/media', function() use($app, $smarty) {
 // Data Routes
 // -----------------------------------------------------------------------------
 
+// GET routes
 $app->get('/galleries/:page', function($page) {
     if (IS_AJAX) {
         $db = getConnection();
-        echo json_encode(getPage($db, $page));
+
+        $pages = getPage($db, $page);
+        $allMedia = getMediaForEntries($db);
+
+        $pagedMedia = array();
+        foreach ( $allMedia as $key => $media ) {
+            $pagedMedia[$media['entryId']][] = array('id'=>$media['id'], 'path'=>$media['path']);
+        }
+        foreach( $pagedMedia as $entryId => $media ) {
+            for ($i = 0; $i < sizeof($pages); $i++) {
+                if ($pages[$i]['id'] == $entryId) {
+                    $pages[$i]['media'] = $media;
+                    break;
+                }
+            }
+        }
+        echo json_encode($pages);
     }
 });
 
+$app->get('/admin/getEntryMedia/(:entryId)', function($entryId = null) use($app) {
+    $db = getConnection();
+    try {
+        echo json_encode( getMediaForEntries($db, $entryId) );
+    } catch (Exception $e) {
+        $app->response->setStatus(500);
+        echo $e->getMessage();
+    }
+});
+
+$app->get('/admin/getMedia/(:id)', function($id = null) use($app) {
+    $db = getConnection();
+    try {
+        echo json_encode( getMedia($db, $id) );
+    } catch (Exception $e) {
+        $app->response->setStatus(500);
+        echo $e->getMessage();
+    }
+});
+
+// POST routes
 $app->post('/admin/galleryEntry', function() use($app) {
     $post = $app->request->post();
     $db = getConnection();
@@ -93,6 +131,7 @@ $app->post('/admin/galleryEntry', function() use($app) {
             echo $db->insert($post['table'], $post['data']);
         });
     } catch (Exception $e) {
+        $app->response->setStatus(500);
         echo $e->getMessage();
     }
 });
@@ -102,8 +141,9 @@ $app->post('/admin/galleryEntry/:id(/:status)', function($id, $status) use($app)
     $db = getConnection();
     if (isset($status)) {
         try {
-            echo $db->update($post['table'], array('published' => $post['data']['status']), array('id' => $id));
+            echo $db->update($post['table'], array('publish' => $status), array('id' => $id));
         } catch (Exception $e) {
+            $app->response->setStatus(500);
             echo $e->getMessage();
         }
     } else {
@@ -112,6 +152,7 @@ $app->post('/admin/galleryEntry/:id(/:status)', function($id, $status) use($app)
                 echo $db->update($post['table'], $post['data'], array('id' => $post['data']['id']));
             });
         } catch (Exception $e) {
+            $app->response->setStatus(500);
             echo $e->getMessage();
         }
     }
@@ -120,10 +161,11 @@ $app->post('/admin/galleryEntry/:id(/:status)', function($id, $status) use($app)
 $app->post('/admin/media', function() use($app) {
 
     require('upload.php');
-    $pathresolver = new FileUpload\PathResolver\Booya($_SERVER['DOCUMENT_ROOT'] . '/img/uploads');
+    $post = $app->request->post();
+    $pathresolver = new FileUpload\PathResolver\Booya($_SERVER['DOCUMENT_ROOT'] . '/img/uploads/' . $post['entryID']);
     $filesystem = new FileUpload\FileSystem\Simple();
     $filenamegenerator = new FileUpload\FileNameGenerator\Booya();
-    $fileupload = new FileUpload\FileUpload($_FILES['files'], $_SERVER);
+    $fileupload = new FileUpload\Booya($_FILES['files'], $_SERVER);
 
     $fileupload->setPathResolver($pathresolver);
     $fileupload->setFileSystem($filesystem);
@@ -131,42 +173,57 @@ $app->post('/admin/media', function() use($app) {
 
     list($files, $headers) = $fileupload->processAll();
 
-    foreach($headers as $header => $value) {
-        header($header . ': ' . $value);
-    }
-
-    if (array_key_exists(0, $files)) {
+    if ($fileupload->getError() > 0) {
+        $app->response->setStatus(500);
+        echo $fileupload->getErrorMessage();
+    } else {
         try {
-
             $db = getConnection();
-            $post = $app->request->post();
             $path = str_replace($_SERVER['DOCUMENT_ROOT'],'',$files[0]->path);
 
             $db->transactional(function($db) use($post, $files, $path) {
                 $db->insert('media', array('type' => $files[0]->type, 'path' => $path, 'entryId' => $post['entryID']));
+                $files[0]->id = $db->lastInsertId();
             });
 
             unset($files[0]->path);
 
+            foreach($headers as $header => $value) {
+                header($header . ': ' . $value);
+            }
+            echo json_encode(array('files' => $files ));
+
         } catch (Exception $e) {
             unlink($files[0]->path);
-            unset($files[0]->error_code);
-            $files[0]->error = $e->getMessage();
+            //unset($files[0]->error_code);
+            $app->response->setStatus(500);
+            echo $e->getMessage();
         }
     }
-
-    echo json_encode(array('files' => $files ));
-
 });
 
+// DELETE routes
 $app->delete('/admin/galleryEntry/:id', function($id) {
     $db = getConnection();
-    $db->delete('entries', array('id' => $id));
+    try {
+        $db->delete('entries', array('id' => $id));
+    } catch (Exception $e) {
+        $app->response->setStatus(500);
+        echo $e->getMessage();
+    }
 });
 
-$app->delete('/admin/media/:id', function($id) {
+$app->delete('/admin/media/:id', function($id) use($app) {
     $db = getConnection();
-    $db->delete('media', array('id' => $id));
+    $post = $app->request->post();
+
+    try {
+        $db->delete('media', array('id' => $id));
+        unlink($_SERVER['DOCUMENT_ROOT'] . $post['path']);
+    } catch (Exception $e) {
+        $app->response->setStatus(500);
+        echo $e->getMessage();
+    }
 });
 
 
@@ -193,23 +250,22 @@ function getConnection() {
 }
 
 function getPage($db, $page){
-    
-$query = <<<QUERY
-SELECT
-    entries.id,
-    entries.title,
-    entries.description,
-    group_concat(media.path) as paths
-FROM
-    entries
-LEFT JOIN media
-    ON entries.id=media.entryId
-WHERE
-    entries.type = ?
-GROUP BY entries.id
-QUERY;
-
+    $query = "SELECT id, title, description FROM entries WHERE type=?";
     return $db->fetchAll($query, array($page));
+}
+
+function getMedia($db, $id){
+    $query = "SELECT entryId, id, path FROM media WHERE id=?";
+    return $db->fetchAll($query, array($id));
+}
+
+function getMediaForEntries($db, $entryId = null){
+    $query = "SELECT entryId, id, path FROM media";
+    if ($entryId !== null) {
+        $query .= " WHERE entryId=?";
+        return $db->fetchAll($query, array($entryId));
+    } else
+        return $db->fetchAll($query);
 }
 
 /*function addEntry($db, $type, $title, $desc) {*/
