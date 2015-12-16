@@ -16,7 +16,6 @@
         <!-- build:css(.tmp) styles/admin-main.css -->
         <link rel="stylesheet" href="/styles/admin.css">
         <!-- endbuild -->
-        <link rel="stylesheet" href="/bower_components/codemirror/lib/codemirror.css" />
         <link rel="stylesheet" href="/bower_components/codemirror/theme/solarized.css" />
         {block name=extra-css}{/block}
 
@@ -34,7 +33,6 @@
                     <ul>
                         <li data-page="{urlFor name="ampsAdmin"}" >Amps</li>
                         <li data-page="{urlFor name="modsAdmin"}" >Mods</li>
-                        <li data-page="{urlFor name="mediaAdmin"}" >Media</li>
                         <li data-page="{urlFor name="editor"}" >Editor</li>
                     </ul>
                 </nav>
@@ -42,12 +40,15 @@
 
             <main role="main">
                 <div>
-                {block name=main-admin-content}Main{/block}
+                {block name=main-content}Main{/block}
                 </div>
             </main>
 
         </div>
-
+        <script 
+            data-main="/scripts/common.js"
+            src="/scripts/require.js">
+        </script>
         {block name=scripts}{/block}
 
     </body>

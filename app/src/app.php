@@ -23,31 +23,31 @@ $baseTemplate = (strpos($_SERVER["REQUEST_URI"], 'admin') !== false ? 'admin-bas
 $smarty = $view->getInstance();
 $smarty->setCompileId((bool) IS_AJAX ? 'ajaxResponse' : $baseTemplate);
 
-// Pages Routes
+// Page Routes
 // -----------------------------------------------------------------------------
 
 $app->get('/', function() use($app, $smarty) {
-   $app->render('pages/home.tpl', array('ParentTemplate' => $smarty->compile_id . '.tpl'));
+   $app->render('pages/home.tpl', array('ParentTemplate' => $smarty->compile_id . '.tpl', 'page' => 'home'));
 })->name('home');
 
 $app->get('/about', function() use($app, $smarty) {
-   $app->render('pages/about.tpl', array('ParentTemplate' => $smarty->compile_id . '.tpl'));
+   $app->render('pages/about.tpl', array('ParentTemplate' => $smarty->compile_id . '.tpl', 'page' => 'about'));
 })->name('about');
 
 $app->get('/news', function() use($app, $smarty) {
-   $app->render('pages/news.tpl', array('ParentTemplate' => $smarty->compile_id . '.tpl'));
+   $app->render('pages/news.tpl', array('ParentTemplate' => $smarty->compile_id . '.tpl', 'page' => 'news'));
 })->name('news');
 
 $app->get('/amps', function() use($app, $smarty) {
-   $app->render('pages/amps.tpl', array('ParentTemplate' => $smarty->compile_id . '.tpl'));
+   $app->render('pages/amps.tpl', array('ParentTemplate' => $smarty->compile_id . '.tpl', 'page' => 'amps'));
 })->name('amps');
 
 $app->get('/mods', function() use($app, $smarty) {
-   $app->render('pages/mods.tpl', array('ParentTemplate' => $smarty->compile_id . '.tpl'));
+   $app->render('pages/mods.tpl', array('ParentTemplate' => $smarty->compile_id . '.tpl', 'page' => 'mods'));
 })->name('mods');
 
 $app->get('/contact', function() use($app, $smarty) {
-   $app->render('pages/contact.tpl', array('ParentTemplate' => $smarty->compile_id . '.tpl'));
+   $app->render('pages/contact.tpl', array('ParentTemplate' => $smarty->compile_id . '.tpl', 'page' => 'contact'));
 })->name('contact');
 
 
@@ -63,16 +63,12 @@ $app->get('/admin/editor', function() use($app, $smarty) {
 })->name('editor');
 
 $app->get('/admin/amps', function() use($app, $smarty) {
-   $app->render('admin/amps.tpl', array('ParentTemplate' => $smarty->compile_id . '.tpl'));
+   $app->render('admin/entries.tpl', array('ParentTemplate' => $smarty->compile_id . '.tpl', 'page' => 'amp'));
 })->name('ampsAdmin');
 
 $app->get('/admin/mods', function() use($app, $smarty) {
-   $app->render('admin/editor.tpl', array('ParentTemplate' => $smarty->compile_id . '.tpl'));
+   $app->render('admin/entries.tpl', array('ParentTemplate' => $smarty->compile_id . '.tpl', 'page' => 'mod'));
 })->name('modsAdmin');
-
-$app->get('/admin/media', function() use($app, $smarty) {
-   $app->render('admin/media.tpl', array('ParentTemplate' => $smarty->compile_id . '.tpl'));
-})->name('mediaAdmin');
 
 
 // Data Routes
@@ -102,7 +98,7 @@ $app->get('/galleries/:page', function($page) {
     }
 });
 
-$app->get('/admin/getEntryMedia/(:entryId)', function($entryId = null) use($app) {
+$app->get('/admin/entryMedia/:entryId', function($entryId) use($app) {
     $db = getConnection();
     try {
         echo json_encode( getMediaForEntries($db, $entryId) );
@@ -112,7 +108,7 @@ $app->get('/admin/getEntryMedia/(:entryId)', function($entryId = null) use($app)
     }
 });
 
-$app->get('/admin/getMedia/(:id)', function($id = null) use($app) {
+$app->get('/admin/media/:id', function($id) use($app) {
     $db = getConnection();
     try {
         echo json_encode( getMedia($db, $id) );
@@ -121,6 +117,48 @@ $app->get('/admin/getMedia/(:id)', function($id = null) use($app) {
         echo $e->getMessage();
     }
 });
+
+$app->get('/admin/files/', function() use($app) {
+    try {
+        $file = urldecode($app->request->get('file'));
+
+        error_log( $file );
+        error_log(getcwd() . '/' . $file);
+
+        if (file_exists($file) && is_file($file)) {
+
+            $app->response->headers->set('Content-disposition', 'attachment; filename=' . basename($file) );
+            $app->response->headers->set('Content-type', filemime($file));
+            readfile(getcwd() . '/' . $file);
+        } elseif (file_exists($file) && is_dir($file)) {
+            $app->response->headers->set('Content-type', 'text/x-dir');
+            $files =  scandir(getcwd() . '/' . $file);
+            array_shift($files);
+            echo $file . '/:' . implode("|",$files);
+        } else {
+            $app->response->setStatus(500);
+            echo 'Error: '.$file.' does not exist.';
+        }
+    } catch (Exception $e) {
+        $app->response->setStatus(500);
+        echo $e->getMessage();
+    }
+});
+
+/*$app->get('/admin/listFiles/', function() use($app) {*/
+    //try {
+        //$dir = $_SERVER['DOCUMENT_ROOT'] . '/' . urldecode($app->request->get('dir'));
+        //if (file_exists($dir) && is_dir($dir)) {
+            //echo implode("|", scandir($dir));
+        //} else {
+            //$app->response->setStatus(500);
+            //echo 'Error: '.$dir.' does not exist.';
+        //}
+    //} catch (Exception $e) {
+        //$app->response->setStatus(500);
+        //echo $e->getMessage();
+    //}
+/*});*/
 
 // POST routes
 $app->post('/admin/galleryEntry', function() use($app) {
@@ -202,6 +240,19 @@ $app->post('/admin/media', function() use($app) {
     }
 });
 
+$app->post('/admin/files', function() use($app) {
+    $post = $app->request->post();
+    try {
+        $content = json_encode($post['content']);
+        $fd = fopen($_SERVER['DOCUMENT_ROOT'] . '/' . $post['file'], 'w');
+        fwrite($fd, $content);
+        fclose($fd);
+    } catch (Exception $e) {
+        $app->response->setStatus(500);
+        echo $e->getMessage();
+    }
+});
+
 // DELETE routes
 $app->delete('/admin/galleryEntry/:id', function($id) {
     $db = getConnection();
@@ -220,6 +271,36 @@ $app->delete('/admin/media/:id', function($id) use($app) {
     try {
         $db->delete('media', array('id' => $id));
         unlink($_SERVER['DOCUMENT_ROOT'] . $post['path']);
+    } catch (Exception $e) {
+        $app->response->setStatus(500);
+        echo $e->getMessage();
+    }
+});
+
+$app->delete('/admin/file/', function() use($app) {
+    try {
+        $file = $_SERVER['DOCUMENT_ROOT'] . $app->request->get('file');
+        if (file_exists($file) && is_file($file)) {
+            unlink($file);
+        } else {
+            $app->response->setStatus(500);
+            echo 'Error: '.$file.' does not exist.';
+        }
+    } catch (Exception $e) {
+        $app->response->setStatus(500);
+        echo $e->getMessage();
+    }
+});
+
+$app->delete('/admin/dir/', function() use($app) {
+    try {
+        $dir = $_SERVER['DOCUMENT_ROOT'] . $app->request->get('dir');
+        if (file_exists($dir) && is_dir($dir)) {
+            rmdir($dir);
+        } else {
+            $app->response->setStatus(500);
+            echo 'Error: '.$dir.' does not exist.';
+        }
     } catch (Exception $e) {
         $app->response->setStatus(500);
         echo $e->getMessage();
@@ -250,7 +331,7 @@ function getConnection() {
 }
 
 function getPage($db, $page){
-    $query = "SELECT id, title, description FROM entries WHERE type=?";
+    $query = "SELECT id, title, description, publish FROM entries WHERE type=?";
     return $db->fetchAll($query, array($page));
 }
 
@@ -268,14 +349,27 @@ function getMediaForEntries($db, $entryId = null){
         return $db->fetchAll($query);
 }
 
-/*function addEntry($db, $type, $title, $desc) {*/
-    //return $db->insert('entries', array('type' => $type, 'title' => $title, 'description' => $desc));
-//}
+// Util Functions
+// -----------------------------------------------------------------------------
+function filemime($file) {
 
-//function addMedia($db, $type, $path, $entryId) {
-    //return $db->insert('entries', array('type' => $type, 'path' => $path, 'entryId' => $entryId));
-//}
+    $mimes = ['css'=>'text/css',
+              'html'=>'text/html',
+              'js'=>'text/javascript',
+              'json'=>'application/json',
+              'php'=>'text/x-php',
+              'sass'=>'text/x-sass',
+              'scss'=>'text/x-scss',
+              'tpl'=>'text/x-smarty',
+              'sql'=>'text/x-sql',
+              'xml'=>'text/xml' ];
 
-//function delete($db, $table, $id) {
-    //
-/*}*/
+    $extension = pathinfo( $file, PATHINFO_EXTENSION );
+
+    if ( array_key_exists( $extension, $mimes ) ) {
+        return $mimes[$extension];
+    } else {
+        $finfo = new finfo(FILEINFO_MIME_TYPE);
+        return $finfo->file($file);
+    }
+}

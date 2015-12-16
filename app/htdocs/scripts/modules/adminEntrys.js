@@ -1,10 +1,7 @@
-require(['jquery','knockout','nav','picoModal','knockout-validation','blueimp-file-upload','slick-carousel','featherlight'],
+require(['jquery','knockout','picoModal','knockout-validation','blueimp-file-upload','slick-carousel','featherlight','domReady!'],
         function($, ko, nav, picoModal, validation){
         'use strict';
 
-    nav();
-
-    var page = document.querySelector('input[name="page"]').value;
 
     function Entry(data){
         this.id = ko.observable(data.id);
@@ -12,7 +9,7 @@ require(['jquery','knockout','nav','picoModal','knockout-validation','blueimp-fi
         this.desc = ko.observable(data.description);
         this.publish = ko.observable(data.publish);
         this.media = ko.observableArray([]);
-        this.type = page;
+        this.type = data.page;
 
         if (data.media) {
             var that = this;
@@ -25,22 +22,24 @@ require(['jquery','knockout','nav','picoModal','knockout-validation','blueimp-fi
 
     function ViewModel(){
         // Properties
-        var self = this,
-            newEntry = new Entry({
-                                'type'       : page,
+        var self = this;
+        self.page = ko.observable(document.querySelector('input[name="page"]').value);
+        self.newEntry = new Entry({
+                                'type'       : self.page,
                                 'id'         : null,
                                 'title'      : '',
                                 'desc'       : '',
-                                'publish'  : false,
+                                'publish'    : 'draft',
                                 'media'      : null,
                                 'pageStyles' : null
                             });
-        self.amps = ko.observableArray([newEntry]);
-        self.selectedEntry = ko.observable(newEntry);
+        self.entries = ko.observableArray([self.newEntry]);
+        self.selectedEntry = ko.observable(self.newEntry);
 
         // Load
-        $.getJSON("/galleries/" + page, function(data) {
-            $.map(data, function(item) { self.amps.push(new Entry(item)); });
+
+        $.getJSON("/galleries/" + self.page(), function(data) {
+            $.map(data, function(item) { self.entries.push(new Entry(item)); });
         });
 
         $('#fileupload').fileupload({
@@ -70,7 +69,7 @@ require(['jquery','knockout','nav','picoModal','knockout-validation','blueimp-fi
             },
             done: function (e, data) {
                 console.log();
-                $.getJSON('/admin/getMedia/' + data.result.files[0].id, function(res){
+                $.getJSON('/admin/media/' + data.result.files[0].id, function(res){
                     self.selectedEntry().media.push( res.pop() );
                     $('div#imgCarousel').slick('slickAdd',$('div#imgCarousel').children('.slide'));
                     data.context.text('Upload finished.');
@@ -96,7 +95,7 @@ require(['jquery','knockout','nav','picoModal','knockout-validation','blueimp-fi
         self.save = function(){
             var postData = {'table' : "entries",
                             'data'  : {
-                                'type'        : page,
+                                'type'        : self.page(),
                                 'title'       : self.selectedEntry().title,
                                 'description' : self.selectedEntry().desc,
                                 'pageStyles'  : self.selectedEntry().pageStyles
@@ -105,6 +104,7 @@ require(['jquery','knockout','nav','picoModal','knockout-validation','blueimp-fi
                 url = ( self.selectedEntry().id() === null ? '/admin/galleryEntry' : '/admin/galleryEntry/' + self.selectedEntry().id());
 
             $.post(url, postData, function(res) {
+                //TODO: Figure out $($())
                 $($(e).children('.success')[0]).fadeIn().delay(5000).fadeOut();
             }).fail(function(data){
                 picoModal("Error: " + data.status).show();
@@ -165,6 +165,9 @@ require(['jquery','knockout','nav','picoModal','knockout-validation','blueimp-fi
         }
     };
 
-    ko.applyBindings(new ViewModel());
+    var mainNode = document.getElementsByTagName('main')[0]
+    ko.cleanNode(mainNode);
+    ko.applyBindings(new ViewModel(), mainNode);
+
 });
 

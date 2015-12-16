@@ -4,11 +4,11 @@
 <link rel="stylesheet" href="/bower_components/slick-carousel/slick/slick-theme.css" />
 <link rel="stylesheet" href="/bower_components/featherlight/src/featherlight.css" />
 {/block}
-{block name=main-admin-content}
+{block name=main-content}
 
     <section role="form">
-        <select data-bind="options: amps,
-                        optionsText: function(amp){ return amp.title() || 'New' },
+        <select data-bind="options: entries,
+                        optionsText: function(entry){ return entry.title() || 'New' },
                         value: selectedEntry">
         </select>
 
@@ -43,7 +43,7 @@
             <label for="desc">Page-Specific Styles (+)</label>
             <textarea type="text" name="styles" data-bind="textInput: selectedEntry().pageStyles" ></textarea>
 
-            <input type="hidden" name="page" value="amp">
+            <input type="hidden" name="page" value="{$page}">
             <input type="hidden" name="entryID" data-bind="value: selectedEntry().id">
             <input type="submit" value="Save">
             <div class="success" >Success!</div>
@@ -67,10 +67,8 @@
 {/block}
 
 {block name=scripts}
-<script
-    data-module="/scripts/modules/adminEntrys.js"
-    data-main="/scripts/common.js"
-    src="/scripts/require.js">
+<script id="pageModule">
+    require(['/scripts/modules/adminEntrys.js']);
 </script>
 {/block}
 

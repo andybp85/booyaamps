@@ -1,14 +1,20 @@
 {extends file="$ParentTemplate"}
-{block name=main-admin-content}
-<a href='#'>Settings</a>
+{block name=extra-css}
+<link rel="stylesheet" href="/bower_components/codemirror/lib/codemirror.css" />
+{/block}
+
+{block name=main-content}
+<div class="success" >Success!</div>
+<h2 id="cmepath"></h2>
+<a id="cmesave" href='#'>Save</a>
+<a id="cmeopen" href='#'>Open</a>
+<a id="cmesettings" href='#'>Settings</a>
 <textarea id="editor"></textarea>
 
 {/block}
 
 {block name=scripts}
-<script
-    data-module="scripts/modules/adminEditor.js"
-    data-main="scripts/common.js"
-    src="scripts/require.js">
+<script id="pageModule">
+    require(['/scripts/modules/adminEditor.js']);
 </script>
 {/block}

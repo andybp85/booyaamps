@@ -28,23 +28,19 @@
             <nav role="navigation">
                 <img src="img/knob.png" />
                 <ul>
-                    <li data-page="/" data-rotation="25" class="active">Home</li>
-                    <li data-page="/about" data-rotation="0" >About</li>
-                    <li data-page="/news" data-rotation="-25" >News</li>
-                    <li data-page="/amps" data-rotation="-70" >Amps</li>
-                    <li data-page="/mods" data-rotation="-120" > Mods</li>
-                    <li data-page="/contact" data-rotation="-160" >Contact</li>
+                    <li data-page="/"        data-rotation="25"   {if $page eq 'home'}    id="thispage" {/if}>Home</li>
+                    <li data-page="/about"   data-rotation="0"    {if $page eq 'about'}   id="thispage" {/if}>About</li>
+                    <li data-page="/news"    data-rotation="-25"  {if $page eq 'news'}    id="thispage" {/if}>News</li>
+                    <li data-page="/amps"    data-rotation="-70"  {if $page eq 'amps'}    id="thispage" {/if}>Amps</li>
+                    <li data-page="/mods"    data-rotation="-120" {if $page eq 'mods'}    id="thispage" {/if}>Mods</li>
+                    <li data-page="/contact" data-rotation="-160" {if $page eq 'contact'} id="thispage" {/if}>Contact</li>
                 </ul>
             </nav>
 
             <hr />
         </header>
 
-        <main role="main">
-            <div>
-            {block name=main-content}Main{/block}
-            </div>
-        </main>
+        {block name=main-content}Main{/block}
 
         <div id="footer-wapper">
             <footer role="contentinfo">
@@ -61,10 +57,10 @@
         </div>
 
         <script
-            data-module="scripts/modules/main.js"
             data-main="scripts/common.js"
             src="scripts/require.js">
         </script>
+        {block name=scripts}{/block}
 
     </body>
 </html>
