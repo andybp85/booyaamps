@@ -298,7 +298,8 @@ main {
   border-style: solid;
   border-color: #ccc;
   height: 58vh;
-  position: relative; }
+  position: relative;
+  min-height: 600px; }
   main::after {
     clear: both;
     content: "";
@@ -310,8 +311,7 @@ main {
     width: 100%; }
 
 div#footer-wapper {
-  position: fixed;
-  bottom: 0px;
+  /*@include position(fixed, null null 0px null);*/
   background-color: #ccc;
   width: 100%; }
 

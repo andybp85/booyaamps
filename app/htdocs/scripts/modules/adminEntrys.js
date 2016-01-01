@@ -14,8 +14,8 @@ require(['jquery','knockout','picoModal','knockout-validation','blueimp-file-upl
         if (data.media) {
             var that = this;
             data.media.forEach(function(m){
+                //console.log(m);
                 that.media.push(m);
-                //console.log(m));
             });
         }
     }
@@ -65,11 +65,11 @@ require(['jquery','knockout','picoModal','knockout-validation','blueimp-file-upl
                 );
             },
             fail: function (e, data) {
-                data.context.text('Upload failed: ' + data.jqXHR.responseText);
+                $(data.context[0]).html('Upload failed: ' + data.jqXHR.responseText);
             },
             done: function (e, data) {
-                console.log();
                 $.getJSON('/admin/media/' + data.result.files[0].id, function(res){
+                    console.log( res );
                     self.selectedEntry().media.push( res.pop() );
                     $('div#imgCarousel').slick('slickAdd',$('div#imgCarousel').children('.slide'));
                     data.context.text('Upload finished.');

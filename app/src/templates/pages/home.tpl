@@ -1,11 +1,9 @@
 {extends file="$ParentTemplate"}
 {block name=main-content}
-<main role="main" data-page="{$page}" >
             <div>
 <h1>Home</h1>
 
             </div>
-        </main>
 
 {/block}
 

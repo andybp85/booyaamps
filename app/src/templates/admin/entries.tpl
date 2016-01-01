@@ -4,7 +4,7 @@
 <link rel="stylesheet" href="/bower_components/slick-carousel/slick/slick-theme.css" />
 <link rel="stylesheet" href="/bower_components/featherlight/src/featherlight.css" />
 {/block}
-{block name=main-content}
+{block name=mainContent}
 
     <section role="form">
         <select data-bind="options: entries,
@@ -27,7 +27,7 @@
                 <div class="slide">
                     <div class="deleteImage" data-bind="click: $parent.deleteFile">X</div>
                     <a href="#" data-bind="attr: { 'data-featherlight' : media.path }">
-                        <img data-bind="attr: { 'data-lazy' : media.path } ">
+                        <img data-bind="attr: { 'data-lazy' : media.thumbPath !== null ? media.thumbPath : media.path } ">
                     </a>
                 </div>
             </div>

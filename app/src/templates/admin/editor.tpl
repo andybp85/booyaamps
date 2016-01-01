@@ -3,7 +3,7 @@
 <link rel="stylesheet" href="/bower_components/codemirror/lib/codemirror.css" />
 {/block}
 
-{block name=main-content}
+{block name=mainContent}
 <div class="success" >Success!</div>
 <h2 id="cmepath"></h2>
 <a id="cmesave" href='#'>Save</a>

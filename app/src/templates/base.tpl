@@ -40,7 +40,9 @@
             <hr />
         </header>
 
-        {block name=main-content}Main{/block}
+        <main role="main">  
+            {block name=main-content}Main{/block}
+        </main>
 
         <div id="footer-wapper">
             <footer role="contentinfo">

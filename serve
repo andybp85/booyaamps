@@ -1,0 +1,311 @@
+object(Slim\Views\Smarty)#17 (2) {
+  ["smarty":protected]=>
+  object(Smarty)#18 (65) {
+    ["auto_literal"]=>
+    bool(true)
+    ["error_unassigned"]=>
+    bool(false)
+    ["use_include_path"]=>
+    bool(false)
+    ["template_dir":"Smarty":private]=>
+    array(1) {
+      [0]=>
+      string(47) "/Users/andrew/Sites/booyaamps/app/src/templates"
+    }
+    ["_joined_template_dir"]=>
+    string(47) "/Users/andrew/Sites/booyaamps/app/src/templates"
+    ["_joined_config_dir"]=>
+    NULL
+    ["default_template_handler_func"]=>
+    NULL
+    ["default_config_handler_func"]=>
+    NULL
+    ["default_plugin_handler_func"]=>
+    NULL
+    ["compile_dir":"Smarty":private]=>
+    string(57) "/Users/andrew/Sites/booyaamps/app/src/templates/compiled/"
+    ["plugins_dir":"Smarty":private]=>
+    array(1) {
+      [0]=>
+      string(69) "/Users/andrew/Sites/booyaamps/app/src/vendor/slim/views/SmartyPlugins"
+    }
+    ["cache_dir":"Smarty":private]=>
+    string(54) "/Users/andrew/Sites/booyaamps/app/src/templates/cache/"
+    ["config_dir":"Smarty":private]=>
+    array(1) {
+      [0]=>
+      string(10) "./configs/"
+    }
+    ["force_compile"]=>
+    bool(false)
+    ["compile_check"]=>
+    bool(true)
+    ["use_sub_dirs"]=>
+    bool(false)
+    ["allow_ambiguous_resources"]=>
+    bool(false)
+    ["merge_compiled_includes"]=>
+    bool(false)
+    ["force_cache"]=>
+    bool(false)
+    ["left_delimiter"]=>
+    string(1) "{"
+    ["right_delimiter"]=>
+    string(1) "}"
+    ["security_class"]=>
+    string(15) "Smarty_Security"
+    ["security_policy"]=>
+    NULL
+    ["php_handling"]=>
+    int(0)
+    ["allow_php_templates"]=>
+    bool(false)
+    ["debugging"]=>
+    bool(false)
+    ["debugging_ctrl"]=>
+    string(4) "NONE"
+    ["smarty_debug_id"]=>
+    string(12) "SMARTY_DEBUG"
+    ["debug_tpl"]=>
+    NULL
+    ["error_reporting"]=>
+    NULL
+    ["config_overwrite"]=>
+    bool(true)
+    ["config_booleanize"]=>
+    bool(true)
+    ["config_read_hidden"]=>
+    bool(false)
+    ["compile_locking"]=>
+    bool(true)
+    ["cache_locking"]=>
+    bool(false)
+    ["locking_timeout"]=>
+    int(10)
+    ["default_resource_type"]=>
+    string(4) "file"
+    ["caching_type"]=>
+    string(4) "file"
+    ["default_config_type"]=>
+    string(4) "file"
+    ["resource_cache_mode"]=>
+    int(1)
+    ["cache_modified_check"]=>
+    bool(false)
+    ["registered_plugins"]=>
+    array(1) {
+      ["function"]=>
+      array(2) {
+        ["path_for"]=>
+        array(3) {
+          [0]=>
+          array(2) {
+            [0]=>
+            object(Slim\Views\SmartyPlugins)#29 (2) {
+              ["router":"Slim\Views\SmartyPlugins":private]=>
+              object(Slim\Router)#21 (7) {
+                ["routeParser":protected]=>
+                object(FastRoute\RouteParser\Std)#22 (0) {
+                }
+                ["basePath":protected]=>
+                string(0) ""
+                ["routes":protected]=>
+                array(0) {
+                }
+                ["routeCounter":protected]=>
+                int(0)
+                ["namedRoutes":protected]=>
+                NULL
+                ["routeGroups":protected]=>
+                array(0) {
+                }
+                ["dispatcher":protected]=>
+                NULL
+              }
+              ["uri":"Slim\Views\SmartyPlugins":private]=>
+              object(Slim\Http\Uri)#24 (9) {
+                ["scheme":protected]=>
+                string(4) "http"
+                ["user":protected]=>
+                string(0) ""
+                ["password":protected]=>
+                string(0) ""
+                ["host":protected]=>
+                string(13) "booyaamps.com"
+                ["port":protected]=>
+                int(9000)
+                ["basePath":protected]=>
+                string(0) ""
+                ["path":protected]=>
+                string(1) "/"
+                ["query":protected]=>
+                string(0) ""
+                ["fragment":protected]=>
+                string(0) ""
+              }
+            }
+            [1]=>
+            string(7) "pathFor"
+          }
+          [1]=>
+          bool(true)
+          [2]=>
+          array(0) {
+          }
+        }
+        ["base_url"]=>
+        array(3) {
+          [0]=>
+          array(2) {
+            [0]=>
+            object(Slim\Views\SmartyPlugins)#29 (2) {
+              ["router":"Slim\Views\SmartyPlugins":private]=>
+              object(Slim\Router)#21 (7) {
+                ["routeParser":protected]=>
+                object(FastRoute\RouteParser\Std)#22 (0) {
+                }
+                ["basePath":protected]=>
+                string(0) ""
+                ["routes":protected]=>
+                array(0) {
+                }
+                ["routeCounter":protected]=>
+                int(0)
+                ["namedRoutes":protected]=>
+                NULL
+                ["routeGroups":protected]=>
+                array(0) {
+                }
+                ["dispatcher":protected]=>
+                NULL
+              }
+              ["uri":"Slim\Views\SmartyPlugins":private]=>
+              object(Slim\Http\Uri)#24 (9) {
+                ["scheme":protected]=>
+                string(4) "http"
+                ["user":protected]=>
+                string(0) ""
+                ["password":protected]=>
+                string(0) ""
+                ["host":protected]=>
+                string(13) "booyaamps.com"
+                ["port":protected]=>
+                int(9000)
+                ["basePath":protected]=>
+                string(0) ""
+                ["path":protected]=>
+                string(1) "/"
+                ["query":protected]=>
+                string(0) ""
+                ["fragment":protected]=>
+                string(0) ""
+              }
+            }
+            [1]=>
+            string(7) "baseUrl"
+          }
+          [1]=>
+          bool(true)
+          [2]=>
+          array(0) {
+          }
+        }
+      }
+    }
+    ["registered_objects"]=>
+    array(0) {
+    }
+    ["registered_classes"]=>
+    array(0) {
+    }
+    ["registered_filters"]=>
+    array(0) {
+    }
+    ["registered_resources"]=>
+    array(0) {
+    }
+    ["registered_cache_resources"]=>
+    array(0) {
+    }
+    ["autoload_filters"]=>
+    array(0) {
+    }
+    ["default_modifiers"]=>
+    array(0) {
+    }
+    ["escape_html"]=>
+    bool(false)
+    ["start_time"]=>
+    float(1450306281.1149)
+    ["_current_file"]=>
+    NULL
+    ["_parserdebug"]=>
+    bool(false)
+    ["_objType"]=>
+    int(1)
+    ["_debug"]=>
+    NULL
+    ["cache_id"]=>
+    NULL
+    ["compile_id"]=>
+    NULL
+    ["caching"]=>
+    bool(false)
+    ["cache_lifetime"]=>
+    int(3600)
+    ["_cache"]=>
+    array(4) {
+      ["template_dir_new"]=>
+      bool(true)
+      ["template_dir"]=>
+      bool(false)
+      ["cache_dir"]=>
+      bool(true)
+      ["compile_dir"]=>
+      bool(true)
+    }
+    ["template_class"]=>
+    string(24) "Smarty_Internal_Template"
+    ["tpl_vars"]=>
+    array(0) {
+    }
+    ["parent"]=>
+    NULL
+    ["config_vars"]=>
+    array(0) {
+    }
+    ["ext"]=>
+    object(Smarty_Internal_Extension_Handler)#19 (4) {
+      ["objType"]=>
+      int(1)
+      ["_property_info":"Smarty_Internal_Extension_Handler":private]=>
+      array(7) {
+        ["AutoloadFilters"]=>
+        int(0)
+        ["DefaultModifiers"]=>
+        int(0)
+        ["ConfigVars"]=>
+        int(0)
+        ["DebugTemplate"]=>
+        int(0)
+        ["RegisteredObject"]=>
+        int(0)
+        ["StreamVariable"]=>
+        int(0)
+        ["TemplateVars"]=>
+        int(0)
+      }
+      ["resolvedProperties":"Smarty_Internal_Extension_Handler":private]=>
+      array(0) {
+      }
+      ["registerPlugin"]=>
+      object(Smarty_Internal_Method_RegisterPlugin)#34 (1) {
+        ["objMap"]=>
+        int(3)
+      }
+    }
+  }
+  ["defaultVariables":protected]=>
+  array(0) {
+  }
+}

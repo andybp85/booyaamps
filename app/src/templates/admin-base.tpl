@@ -31,16 +31,16 @@
 
                 <nav role="navigation">
                     <ul>
-                        <li data-page="{urlFor name="ampsAdmin"}" >Amps</li>
-                        <li data-page="{urlFor name="modsAdmin"}" >Mods</li>
-                        <li data-page="{urlFor name="editor"}" >Editor</li>
+                        <li data-page="{path_for name="ampsAdmin"}" >Amps</li>
+                        <li data-page="{path_for name="modsAdmin"}" >Mods</li>
+                        <li data-page="{path_for name="editor"}" >Editor</li>
                     </ul>
                 </nav>
             </header>
 
             <main role="main">
                 <div>
-                {block name=main-content}Main{/block}
+                {block name=mainContent}Main{/block}
                 </div>
             </main>
 

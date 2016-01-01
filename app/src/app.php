@@ -2,89 +2,130 @@
 
 // Smarty setup
 // -----------------------------------------------------------------------------
-
-// Setup our renderer
-$app->view(new \Slim\Views\Smarty());
-
-$view = $app->view();
-$view->parserCompileDirectory = dirname(__FILE__) . '/templates/compiled';
-$view->parserCacheDirectory = dirname(__FILE__) . '/templates/cache';
-$view->parserExtensions = array(
-    dirname(__FILE__) . '/vendor/slim/views/SmartyPlugins',
-);
+$baseTemplate = (strpos($_SERVER["REQUEST_URI"], 'admin') !== false ? 'admin-base' : 'base');
 
 // figure out which main template to use
 define('IS_AJAX', (bool) (isset($_SERVER['HTTP_X_REQUESTED_WITH'])
                         && !empty($_SERVER['HTTP_X_REQUESTED_WITH'])
                         && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest'));
+// Fetch DI Container
+$container = $app->getContainer();
 
-$baseTemplate = (strpos($_SERVER["REQUEST_URI"], 'admin') !== false ? 'admin-base' : 'base');
+// Register Smarty View helper
+$container['view'] = function ($c) {
+    $view = new \Slim\Views\Smarty(dirname(__FILE__) . '/templates', [
+        'cacheDir' => dirname(__FILE__) . '/templates/cache',
+        'compileDir' => dirname(__FILE__) . '/templates/compiled',
+        'pluginsDir' => [dirname(__FILE__) . '/vendor/smarty/smarty/libs/plugins'],
+    ]);
 
-$smarty = $view->getInstance();
-$smarty->setCompileId((bool) IS_AJAX ? 'ajaxResponse' : $baseTemplate);
+    // Add Slim specific plugins
+    $view->addSlimPlugins($c['router'], $c['request']->getUri());
+
+    return $view;
+};
+
+$smarty = $container['view']->getSmarty();
+$smarty->compile_id = ((bool) IS_AJAX ? 'ajaxResponse' : $baseTemplate);
+
+
+
 
 // Page Routes
 // -----------------------------------------------------------------------------
+$app->get('/', function($request, $response, $args) use($smarty) {
+    return $this->view->render($response, 'pages/home.tpl', [ 
+        'ParentTemplate' => $smarty->compile_id . '.tpl',
+        'page' => 'home'
+    ]);
+})->setName('home');
 
-$app->get('/', function() use($app, $smarty) {
-   $app->render('pages/home.tpl', array('ParentTemplate' => $smarty->compile_id . '.tpl', 'page' => 'home'));
-})->name('home');
+$app->get('/about', function($request, $response, $args) use($smarty) {
+    return $this->view->render($response, 'pages/about.tpl', [ 
+        'ParentTemplate' => $smarty->compile_id . '.tpl',
+        'page' => 'about'
+    ]);
+})->setName('about');
 
-$app->get('/about', function() use($app, $smarty) {
-   $app->render('pages/about.tpl', array('ParentTemplate' => $smarty->compile_id . '.tpl', 'page' => 'about'));
-})->name('about');
+$app->get('/news', function($request, $response, $args) use($smarty) {
+    return $this->view->render($response, 'pages/news.tpl', [ 
+        'ParentTemplate' => $smarty->compile_id . '.tpl',
+        'page' => 'news'
+    ]);
+})->setName('news');
 
-$app->get('/news', function() use($app, $smarty) {
-   $app->render('pages/news.tpl', array('ParentTemplate' => $smarty->compile_id . '.tpl', 'page' => 'news'));
-})->name('news');
+$app->get('/amps', function($request, $response, $args) use($smarty) {
+    return $this->view->render($response, 'pages/amps.tpl', [ 
+        'ParentTemplate' => $smarty->compile_id . '.tpl',
+        'page' => 'amps'
+    ]);
+})->setName('amps');
 
-$app->get('/amps', function() use($app, $smarty) {
-   $app->render('pages/amps.tpl', array('ParentTemplate' => $smarty->compile_id . '.tpl', 'page' => 'amps'));
-})->name('amps');
+$app->get('/mods', function($request, $response, $args) use($smarty) {
+    return $this->view->render($response, 'pages/mods.tpl', [ 
+        'ParentTemplate' => $smarty->compile_id . '.tpl',
+        'page' => 'mods'
+    ]);
+})->setName('mods');
 
-$app->get('/mods', function() use($app, $smarty) {
-   $app->render('pages/mods.tpl', array('ParentTemplate' => $smarty->compile_id . '.tpl', 'page' => 'mods'));
-})->name('mods');
+$app->get('/contact', function($request, $response, $args) use($smarty) {
+    return $this->view->render($response, 'pages/contact.tpl', [ 
+        'ParentTemplate' => $smarty->compile_id . '.tpl',
+        'page' => 'contact'
+    ]);
+})->setName('contact');
 
-$app->get('/contact', function() use($app, $smarty) {
-   $app->render('pages/contact.tpl', array('ParentTemplate' => $smarty->compile_id . '.tpl', 'page' => 'contact'));
-})->name('contact');
 
 
 // Admin Routes
 // -----------------------------------------------------------------------------
+$app->get('/admin', function($request, $response, $args) use($smarty) {
+    return $response->withRedirect('/admin/editor');
+})->setName('admin');;
 
-$app->get('/admin', function() use($app, $smarty) {
-   $app->render('admin/editor.tpl', array('ParentTemplate' => $smarty->compile_id . '.tpl'));
-})->name('admin');
+$app->get('/admin/editor', function($request, $response, $args) use($smarty) {
+    try {
+    return $this->view->render($response, 'admin/editor.tpl', [ 
+        'ParentTemplate' => $smarty->compile_id . '.tpl'
+    ]);
+     } catch (Exception $e) {
+        error_status( $e->getMessage() );
+    }
+})->setName('editor');
 
-$app->get('/admin/editor', function() use($app, $smarty) {
-   $app->render('admin/editor.tpl', array('ParentTemplate' => $smarty->compile_id . '.tpl'));
-})->name('editor');
+$app->get('/admin/amps', function($request, $response, $args) use($smarty) {
+    return $this->view->render($response, 'admin/entries.tpl', [ 
+        'ParentTemplate' => $smarty->compile_id . '.tpl',
+        'page' => 'amp'
+    ]);
+})->setName('ampsAdmin');
 
-$app->get('/admin/amps', function() use($app, $smarty) {
-   $app->render('admin/entries.tpl', array('ParentTemplate' => $smarty->compile_id . '.tpl', 'page' => 'amp'));
-})->name('ampsAdmin');
-
-$app->get('/admin/mods', function() use($app, $smarty) {
-   $app->render('admin/entries.tpl', array('ParentTemplate' => $smarty->compile_id . '.tpl', 'page' => 'mod'));
-})->name('modsAdmin');
+$app->get('/admin/mods', function($request, $response, $args) use($smarty) {
+    return $this->view->render($response, 'admin/entries.tpl', [ 
+        'ParentTemplate' => $smarty->compile_id . '.tpl',
+        'page' => 'mod'
+    ]);
+})->setName('modsAdmin');
 
 
 // Data Routes
 // -----------------------------------------------------------------------------
 
 // GET routes
-$app->get('/galleries/:page', function($page) {
+$app->get('/galleries/{page}', function($request, $response, $args) {
     if (IS_AJAX) {
         $db = getConnection();
 
-        $pages = getPage($db, $page);
+        $pages = getPage($db, $args['page']);
         $allMedia = getMediaForEntries($db);
 
         $pagedMedia = array();
         foreach ( $allMedia as $key => $media ) {
-            $pagedMedia[$media['entryId']][] = array('id'=>$media['id'], 'path'=>$media['path']);
+            error_log( print_r($media,1));
+            //if (strpos($media['type'], 'video') !== FALSE)
+                //$media['path'] .= '.' . explode('/', $media['type'])[1];
+
+            $pagedMedia[$media['entryId']][] = array('id'=>$media['id'], 'path'=>$media['path'], 'thumbPath'=>$media['thumbPath'], 'type'=>$media['type']);
         }
         foreach( $pagedMedia as $entryId => $media ) {
             for ($i = 0; $i < sizeof($pages); $i++) {
@@ -98,91 +139,71 @@ $app->get('/galleries/:page', function($page) {
     }
 });
 
-$app->get('/admin/entryMedia/:entryId', function($entryId) use($app) {
+$app->get('/admin/entryMedia/{entryId}', function($request, $response, $args) {
     $db = getConnection();
     try {
-        echo json_encode( getMediaForEntries($db, $entryId) );
+        echo json_encode( getMediaForEntries($db, $args['entryId']) );
     } catch (Exception $e) {
-        $app->response->setStatus(500);
-        echo $e->getMessage();
+        error_status($response, $e->getMessage());
     }
 });
 
-$app->get('/admin/media/:id', function($id) use($app) {
+$app->get('/admin/media/{id}', function($request, $response, $args) {
     $db = getConnection();
     try {
-        echo json_encode( getMedia($db, $id) );
+        echo json_encode( getMedia($db, $args['id']) );
     } catch (Exception $e) {
-        $app->response->setStatus(500);
-        echo $e->getMessage();
+        error_status($response, $e->getMessage());
     }
 });
 
-$app->get('/admin/files/', function() use($app) {
+$app->get('/admin/files', function($request, $response, $args) {
     try {
-        $file = urldecode($app->request->get('file'));
-
-        error_log( $file );
-        error_log(getcwd() . '/' . $file);
+        $file = $request->getQueryParams()['file'];
 
         if (file_exists($file) && is_file($file)) {
 
-            $app->response->headers->set('Content-disposition', 'attachment; filename=' . basename($file) );
-            $app->response->headers->set('Content-type', filemime($file));
-            readfile(getcwd() . '/' . $file);
+            $dispositionResponse = $response->withHeader('Content-disposition', 'attachment; filename=' . basename($file) );
+            $typeResponse = $dispositionResponse->withHeader('Content-type', filemime($file));
+            $typeResponse->getBody()->write(file_get_contents(getcwd() . '/' . $file));
+            return $typeResponse;
+
         } elseif (file_exists($file) && is_dir($file)) {
-            $app->response->headers->set('Content-type', 'text/x-dir');
+            $typeResponse = $response->withHeader('Content-type', 'text/x-dir');
             $files =  scandir(getcwd() . '/' . $file);
             array_shift($files);
-            echo $file . '/:' . implode("|",$files);
+            $typeResponse->getBody()->write($file . '/:' . implode("|",$files));
+            return $typeResponse;
+
         } else {
-            $app->response->setStatus(500);
-            echo 'Error: '.$file.' does not exist.';
+            error_status($response, 'Error: '.$file.' does not exist.');
         }
     } catch (Exception $e) {
-        $app->response->setStatus(500);
-        echo $e->getMessage();
+        error_status($response, $e->getMessage());
     }
 });
 
-/*$app->get('/admin/listFiles/', function() use($app) {*/
-    //try {
-        //$dir = $_SERVER['DOCUMENT_ROOT'] . '/' . urldecode($app->request->get('dir'));
-        //if (file_exists($dir) && is_dir($dir)) {
-            //echo implode("|", scandir($dir));
-        //} else {
-            //$app->response->setStatus(500);
-            //echo 'Error: '.$dir.' does not exist.';
-        //}
-    //} catch (Exception $e) {
-        //$app->response->setStatus(500);
-        //echo $e->getMessage();
-    //}
-/*});*/
-
 // POST routes
-$app->post('/admin/galleryEntry', function() use($app) {
-    $post = $app->request->post();
+$app->post('/admin/galleryEntry', function($request, $response, $args) {
+    $post = $request->post();
     $db = getConnection();
     try {
         $db->transactional(function($db) use($post) {
             echo $db->insert($post['table'], $post['data']);
         });
     } catch (Exception $e) {
-        $app->response->setStatus(500);
-        echo $e->getMessage();
+        error_status($response, $e->getMessage());
     }
 });
 
-$app->post('/admin/galleryEntry/:id(/:status)', function($id, $status) use($app) {
-    $post = $app->request->post();
+$app->post('/admin/galleryEntry/{id}/{status}', function($request, $response, $args) {
+    $post = $request->post();
     $db = getConnection();
-    if (isset($status)) {
+    if (array_key_exists('status', $args)) {
         try {
-            echo $db->update($post['table'], array('publish' => $status), array('id' => $id));
+            echo $db->update($post['table'], array('publish' => $args['status']), array('id' => $id));
         } catch (Exception $e) {
-            $app->response->setStatus(500);
-            echo $e->getMessage();
+            error_status($response, $e->getMessage());
         }
     } else {
         try {
@@ -190,37 +211,102 @@ $app->post('/admin/galleryEntry/:id(/:status)', function($id, $status) use($app)
                 echo $db->update($post['table'], $post['data'], array('id' => $post['data']['id']));
             });
         } catch (Exception $e) {
-            $app->response->setStatus(500);
-            echo $e->getMessage();
+            error_status($response, $e->getMessage());
         }
     }
 });
 
-$app->post('/admin/media', function() use($app) {
+$app->post('/admin/media', function($request, $response, $args) {
 
     require('upload.php');
-    $post = $app->request->post();
-    $pathresolver = new FileUpload\PathResolver\Booya($_SERVER['DOCUMENT_ROOT'] . '/img/uploads/' . $post['entryID']);
-    $filesystem = new FileUpload\FileSystem\Simple();
-    $filenamegenerator = new FileUpload\FileNameGenerator\Booya();
-    $fileupload = new FileUpload\Booya($_FILES['files'], $_SERVER);
 
-    $fileupload->setPathResolver($pathresolver);
-    $fileupload->setFileSystem($filesystem);
-    $fileupload->setFileNameGenerator($filenamegenerator);
+    try {
+        $post = $request->getParsedBody();
+        $pathresolver = new FileUpload\PathResolver\Booya($_SERVER['DOCUMENT_ROOT'] . '/uploads/' . $post['entryID']);
+        $filesystem = new FileUpload\FileSystem\Simple();
+        $filenamegenerator = new FileUpload\FileNameGenerator\Booya();
+        $fileupload = new FileUpload\Booya($_FILES['files'], $_SERVER);
 
-    list($files, $headers) = $fileupload->processAll();
+        $fileupload->setPathResolver($pathresolver);
+        $fileupload->setFileSystem($filesystem);
+        $fileupload->setFileNameGenerator($filenamegenerator);
+
+        list($files, $headers) = $fileupload->processAll();
+
+    } catch (Exception $e) {
+        error_status($response, $e->getMessage());
+    }
 
     if ($fileupload->getError() > 0) {
-        $app->response->setStatus(500);
-        echo $fileupload->getErrorMessage();
-    } else {
-        try {
-            $db = getConnection();
-            $path = str_replace($_SERVER['DOCUMENT_ROOT'],'',$files[0]->path);
+        error_status($response, $e->getMessage());
 
-            $db->transactional(function($db) use($post, $files, $path) {
-                $db->insert('media', array('type' => $files[0]->type, 'path' => $path, 'entryId' => $post['entryID']));
+    } else {
+
+        $dbEntry = null;
+        $childs = [];
+
+        try {
+            $pathParts = pathinfo( str_replace($_SERVER['DOCUMENT_ROOT'],'',$files[0]->path) );
+
+            $dbEntry = ['type' => $files[0]->type,
+                        'path' => $pathParts['dirname'] . '/' . $pathParts['basename'],
+                        'entryId' => $post['entryID'],
+                        'thumbPath' => null
+                    ];
+
+            if (strpos($dbEntry['type'], 'video') !== FALSE) {
+                $ffmpeg = FFMpeg\FFMpeg::create();
+                $video = $ffmpeg->open($files[0]->path);
+                $frame = $video->frame(FFMpeg\Coordinate\TimeCode::fromSeconds(5));
+
+                $thumbPath = $pathParts['dirname'] . '/' . $pathParts['filename'] . '_thumb.jpg';
+                $frame->save($_SERVER['DOCUMENT_ROOT'] . $thumbPath);
+
+
+                $dbEntry['thumbPath'] = $thumbPath;
+
+                // needs ffmpeg with --with-libvorbis --with-theora --with-libvpx
+                foreach(['webm','mp4','ogg'] as $format) {
+
+                    if (strpos($dbEntry['type'], $format) === FALSE) {
+                        $subVideoPath = $pathParts['dirname'] . '/' . $pathParts['filename'] . '.' . $format;
+                        $dbEntry['type'] .= '|video/' . $format;
+
+                        $pid = pcntl_fork();
+
+                        if ($pid) { 
+                            $childs[] = $pid;
+                        } else {
+                            try {
+                                //$video->save(new FFMpeg\Format\Video\WebM(), $_SERVER['DOCUMENT_ROOT'] . $subVideoPath);
+                                $cmd = 'ffmpeg -i ' .$files[0]->path . ' ' . $_SERVER['DOCUMENT_ROOT'] . $subVideoPath . ' 2>&1';
+                                exec($cmd, $output, $value);
+                            } catch (Exception $e) {
+                                error_log( print_r($cmd,1) );
+                                error_log( print_r($value,1) );
+                                error_log( print_r($output,1) );
+                            } finally {
+                                error_log( 'kill ' . posix_getpid() );
+                                posix_kill(posix_getpid(), SIGKILL);
+                            }
+                        }
+                    }
+                }
+                while(count($childs) > 0) {
+                    foreach($childs as $key => $pid) {
+                        $res = pcntl_waitpid($pid, $status, WNOHANG);
+
+                        // If the process has already exited
+                        if($res == -1 || $res > 0)
+                            unset($childs[$key]);
+                    }
+                    sleep(1);
+                }
+            }
+
+            $db = getConnection();
+            $db->transactional(function($db) use($files, $dbEntry) {
+                $db->insert('media', $dbEntry);
                 $files[0]->id = $db->lastInsertId();
             });
 
@@ -232,78 +318,87 @@ $app->post('/admin/media', function() use($app) {
             echo json_encode(array('files' => $files ));
 
         } catch (Exception $e) {
-            unlink($files[0]->path);
-            //unset($files[0]->error_code);
-            $app->response->setStatus(500);
-            echo $e->getMessage();
+            if ($dbEntry['thumbPath'] !== null) {
+                unlink($_SERVER['DOCUMENT_ROOT'] . $dbEntry['thumbPath']);
+                /*foreach ($processes as $p) {*/
+                    //error_log($p);
+                    //if (posix_getppid() !== $p && posix_getpid() !== $pid)
+                        //posix_kill($p, SIGKILL);
+                /*}*/
+                foreach ( explode('|', $dbEntry['path']) as $path)
+                    unlink($_SERVER['DOCUMENT_ROOT'] . $path);
+
+            } else
+                unlink($files[0]->path);
+
+            error_status($response, $e->getMessage());
         }
     }
 });
 
-$app->post('/admin/files', function() use($app) {
-    $post = $app->request->post();
+$app->post('/admin/files', function($request, $response, $args) {
+    $post = $request->getHeaders();
     try {
         $content = json_encode($post['content']);
         $fd = fopen($_SERVER['DOCUMENT_ROOT'] . '/' . $post['file'], 'w');
         fwrite($fd, $content);
         fclose($fd);
     } catch (Exception $e) {
-        $app->response->setStatus(500);
-        echo $e->getMessage();
+        error_status($response, $e->getMessage());
     }
 });
 
 // DELETE routes
-$app->delete('/admin/galleryEntry/:id', function($id) {
+$app->delete('/admin/galleryEntry/{id}', function($request, $response, $args) {
     $db = getConnection();
     try {
-        $db->delete('entries', array('id' => $id));
+        $db->delete('entries', array('id' => $args['id']));
     } catch (Exception $e) {
-        $app->response->setStatus(500);
-        echo $e->getMessage();
+        error_status($response, $e->getMessage());
     }
 });
 
-$app->delete('/admin/media/:id', function($id) use($app) {
+$app->delete('/admin/media/{id}', function($request, $response, $args) {
     $db = getConnection();
-    $post = $app->request->post();
+    $post = $request->getParsedBody();
 
     try {
-        $db->delete('media', array('id' => $id));
-        unlink($_SERVER['DOCUMENT_ROOT'] . $post['path']);
+        $db->delete('media', array('id' => $args['id']));
+        foreach( explode('|',$post['path']) as $path) {
+            unlink($_SERVER['DOCUMENT_ROOT'] . $path);
+            $path_parts = pathinfo($path);
+            if (is_dir_empty($path_parts['dirname']))
+                rmdir($path_parts['dirname']);
+        }
+
     } catch (Exception $e) {
-        $app->response->setStatus(500);
-        echo $e->getMessage();
+        error_status($response, $e->getMessage());
     }
 });
 
-$app->delete('/admin/file/', function() use($app) {
+$app->delete('/admin/file/', function($request, $response, $args) {
     try {
-        $file = $_SERVER['DOCUMENT_ROOT'] . $app->request->get('file');
+        $file = $_SERVER['DOCUMENT_ROOT'] . $request->get('file');
         if (file_exists($file) && is_file($file)) {
             unlink($file);
         } else {
-            $app->response->setStatus(500);
-            echo 'Error: '.$file.' does not exist.';
+            error_status($response, 'Error: '.$file.' does not exist.');
         }
     } catch (Exception $e) {
-        $app->response->setStatus(500);
-        echo $e->getMessage();
+        error_status($response, $e->getMessage());
     }
 });
 
-$app->delete('/admin/dir/', function() use($app) {
+$app->delete('/admin/dir/', function($request, $response, $args) {
     try {
-        $dir = $_SERVER['DOCUMENT_ROOT'] . $app->request->get('dir');
+        $dir = $_SERVER['DOCUMENT_ROOT'] . $request->get('dir');
         if (file_exists($dir) && is_dir($dir)) {
             rmdir($dir);
         } else {
-            $app->response->setStatus(500);
-            echo 'Error: '.$dir.' does not exist.';
+            error_status($response, 'Error: '.$dir.' does not exist.');
         }
     } catch (Exception $e) {
-        $app->response->setStatus(500);
-        echo $e->getMessage();
+        error_status($response, $e->getMessage());
     }
 });
 
@@ -341,7 +436,7 @@ function getMedia($db, $id){
 }
 
 function getMediaForEntries($db, $entryId = null){
-    $query = "SELECT entryId, id, path FROM media";
+    $query = "SELECT entryId, id, path, thumbPath, type FROM media";
     if ($entryId !== null) {
         $query .= " WHERE entryId=?";
         return $db->fetchAll($query, array($entryId));
@@ -372,4 +467,21 @@ function filemime($file) {
         $finfo = new finfo(FILEINFO_MIME_TYPE);
         return $finfo->file($file);
     }
+}
+
+function is_dir_empty($dir) {
+    if (!is_readable($dir)) return NULL; 
+    $handle = opendir($dir);
+    while (false !== ($entry = readdir($handle))) {
+        if ($entry != "." && $entry != "..") {
+            return FALSE;
+        }
+    }
+    return TRUE;
+}
+
+function error_status($response, $msg) {
+    $response->withStatus(500);
+    echo $msg;
+    exit();
 }

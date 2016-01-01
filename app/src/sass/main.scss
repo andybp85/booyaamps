@@ -83,6 +83,7 @@ main {
     border-color: $light-gray;
     height: 58vh;
     position: relative;
+    min-height: 600px;
 
     > div {
         padding: 0 10px;
@@ -93,7 +94,7 @@ main {
 }
 
 div#footer-wapper {
-    @include position(fixed, null null 0px null);
+    /*@include position(fixed, null null 0px null);*/
     background-color: $light-gray;
     width: 100%;
 }

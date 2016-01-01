@@ -11,11 +11,11 @@ require __DIR__ . '/../src/vendor/autoload.php';
 
 //$composer = json_decode(file_get_contents(__DIR__ . '/../composer.json'));
 
-$app = new \Slim\Slim(array(
+$app = new \Slim\App(array(
       //'version'        => $composer->version,
-      'debug'          => true,
+      'debug'          => true
       //'mode'           => 'production',
-      'templates.path' => __DIR__ . '/../src/templates'
+      //'templates.path' => __DIR__ . '/../src/templates'
     )
 );
 
