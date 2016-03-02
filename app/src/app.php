@@ -1,4 +1,5 @@
 <?php
+error_reporting(E_ALL & ~E_NOTICE);
 
 // Smarty setup
 // -----------------------------------------------------------------------------
@@ -21,6 +22,9 @@ $container['view'] = function ($c) {
 
     // Add Slim specific plugins
     $view->addSlimPlugins($c['router'], $c['request']->getUri());
+    $view->parserExtensions = array(
+        dirname(__FILE__) . '/vendor/slim/views/SmartyPlugins',
+    );
 
     return $view;
 };
@@ -28,12 +32,25 @@ $container['view'] = function ($c) {
 $smarty = $container['view']->getSmarty();
 $smarty->compile_id = ((bool) IS_AJAX ? 'ajaxResponse' : $baseTemplate);
 
+// Auth
+// -----------------------------------------------------------------------------
+$dotenv = new Dotenv\Dotenv(__dir__);
+$dotenv->load();
 
+//$pdo = new \PDO("sqlite:/tmp/users.sqlite");
+
+$app->add(new \Slim\Middleware\HttpBasicAuthentication([
+    "path" => "/admin",
+    "secure" => false,
+    "users" => [
+        "root" => "t00r"
+    ]
+]));
 
 
 // Page Routes
 // -----------------------------------------------------------------------------
-$app->get('/', function($request, $response, $args) use($smarty) {
+$app->get('/',function ($request, $response, $args) use($smarty) {
     return $this->view->render($response, 'pages/home.tpl', [ 
         'ParentTemplate' => $smarty->compile_id . '.tpl',
         'page' => 'home'
@@ -121,11 +138,12 @@ $app->get('/galleries/{page}', function($request, $response, $args) {
 
         $pagedMedia = array();
         foreach ( $allMedia as $key => $media ) {
-            error_log( print_r($media,1));
-            //if (strpos($media['type'], 'video') !== FALSE)
-                //$media['path'] .= '.' . explode('/', $media['type'])[1];
-
-            $pagedMedia[$media['entryId']][] = array('id'=>$media['id'], 'path'=>$media['path'], 'thumbPath'=>$media['thumbPath'], 'type'=>$media['type']);
+            $pagedMedia[$media['entryId']][] = [
+                                                'id'        => $media['id'],
+                                                'path'      => $media['path'],
+                                                'thumbPath' => $media['thumbPath'],
+                                                'type'      => $media['type']
+                                            ];
         }
         foreach( $pagedMedia as $entryId => $media ) {
             for ($i = 0; $i < sizeof($pages); $i++) {
@@ -254,54 +272,56 @@ $app->post('/admin/media', function($request, $response, $args) {
                         'thumbPath' => null
                     ];
 
+            // needs ffmpeg with --with-libvorbis --with-theora --with-libvpx
             if (strpos($dbEntry['type'], 'video') !== FALSE) {
-                $ffmpeg = FFMpeg\FFMpeg::create();
-                $video = $ffmpeg->open($files[0]->path);
-                $frame = $video->frame(FFMpeg\Coordinate\TimeCode::fromSeconds(5));
-
                 $thumbPath = $pathParts['dirname'] . '/' . $pathParts['filename'] . '_thumb.jpg';
-                $frame->save($_SERVER['DOCUMENT_ROOT'] . $thumbPath);
 
+                try {
+                    $cmd = 'ffmpeg -i ' . $files[0]->path . ' -ss 00:00:01 -vframes 1 ' . $thumbPath;
+                    exec($cmd, $output, $value);
+                } catch (Exception $e) {
+                    error_log( print_r($cmd,1) );
+                    error_log( print_r($value,1) );
+                    error_log( print_r($output,1) );
+                }
 
                 $dbEntry['thumbPath'] = $thumbPath;
 
-                // needs ffmpeg with --with-libvorbis --with-theora --with-libvpx
                 foreach(['webm','mp4','ogg'] as $format) {
 
                     if (strpos($dbEntry['type'], $format) === FALSE) {
-                        $subVideoPath = $pathParts['dirname'] . '/' . $pathParts['filename'] . '.' . $format;
+                        $subVideoPath = $pathParts['dirname'] . '/' . $pathParts['filename'] . '.' . $_SERVER['DOCUMENT_ROOT'] . $format;
                         $dbEntry['type'] .= '|video/' . $format;
 
                         $pid = pcntl_fork();
 
-                        if ($pid) { 
+                        if ($pid) {
                             $childs[] = $pid;
                         } else {
                             try {
                                 //$video->save(new FFMpeg\Format\Video\WebM(), $_SERVER['DOCUMENT_ROOT'] . $subVideoPath);
-                                $cmd = 'ffmpeg -i ' .$files[0]->path . ' ' . $_SERVER['DOCUMENT_ROOT'] . $subVideoPath . ' 2>&1';
+                                $cmd = 'ffmpeg -i ' . $files[0]->path . ' ' . $_SERVER['DOCUMENT_ROOT'] . $subVideoPath . ' 2>&1';
                                 exec($cmd, $output, $value);
                             } catch (Exception $e) {
                                 error_log( print_r($cmd,1) );
                                 error_log( print_r($value,1) );
                                 error_log( print_r($output,1) );
                             } finally {
-                                error_log( 'kill ' . posix_getpid() );
                                 posix_kill(posix_getpid(), SIGKILL);
                             }
                         }
                     }
                 }
-                while(count($childs) > 0) {
-                    foreach($childs as $key => $pid) {
-                        $res = pcntl_waitpid($pid, $status, WNOHANG);
+                /*while(count($childs) > 0) {*/
+                    //foreach($childs as $key => $pid) {
+                        //$res = pcntl_waitpid($pid, $status, WNOHANG);
 
-                        // If the process has already exited
-                        if($res == -1 || $res > 0)
-                            unset($childs[$key]);
-                    }
-                    sleep(1);
-                }
+                        //// If the process has already exited
+                        //if($res == -1 || $res > 0)
+                            //unset($childs[$key]);
+                    //}
+                    //sleep(1);
+                /*}*/
             }
 
             $db = getConnection();
@@ -320,16 +340,14 @@ $app->post('/admin/media', function($request, $response, $args) {
         } catch (Exception $e) {
             if ($dbEntry['thumbPath'] !== null) {
                 unlink($_SERVER['DOCUMENT_ROOT'] . $dbEntry['thumbPath']);
-                /*foreach ($processes as $p) {*/
-                    //error_log($p);
-                    //if (posix_getppid() !== $p && posix_getpid() !== $pid)
-                        //posix_kill($p, SIGKILL);
-                /*}*/
+                foreach ($childs as $child) {
+                    posix_kill($child, SIGKILL);
+                }
+                error_log( print_r( $dbEntry['path'], 1 ) );
                 foreach ( explode('|', $dbEntry['path']) as $path)
                     unlink($_SERVER['DOCUMENT_ROOT'] . $path);
-
-            } else
-                unlink($files[0]->path);
+            }
+            unlink($files[0]->path);
 
             error_status($response, $e->getMessage());
         }
@@ -407,9 +425,6 @@ $app->delete('/admin/dir/', function($request, $response, $args) {
 // -----------------------------------------------------------------------------
 
 function getConnection() {
-
-    $dotenv = new Dotenv\Dotenv(__dir__);
-    $dotenv->load();
 
     $connectionParams = array(
         'dbname'   => $_ENV['BOOYA_DB'],

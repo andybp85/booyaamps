@@ -1,0 +1,6 @@
+{
+    "require": {
+        "slim/views": "0.1.*",
+        "maps82/smarty-view": "0.4.*"
+    }
+}
