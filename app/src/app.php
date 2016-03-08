@@ -19,12 +19,10 @@ $container['view'] = function ($c) {
         'compileDir' => dirname(__FILE__) . '/templates/compiled',
         'pluginsDir' => [dirname(__FILE__) . '/vendor/smarty/smarty/libs/plugins'],
     ]);
-
-    // Add Slim specific plugins
-    $view->addSlimPlugins($c['router'], $c['request']->getUri());
     $view->parserExtensions = array(
         dirname(__FILE__) . '/vendor/slim/views/SmartyPlugins',
     );
+    $view->addSlimPlugins($c['router'], $c['request']->getUri());
 
     return $view;
 };
@@ -37,56 +35,65 @@ $smarty->compile_id = ((bool) IS_AJAX ? 'ajaxResponse' : $baseTemplate);
 $dotenv = new Dotenv\Dotenv(__dir__);
 $dotenv->load();
 
-//$pdo = new \PDO("sqlite:/tmp/users.sqlite");
+use \Slim\Middleware\HttpBasicAuthentication\PdoAuthenticator;
+
+$pdo = new PDO(
+    'mysql:host=' . $_ENV["BOOYA_DB_HOST"] . ';dbname=' . $_ENV["BOOYA_DB"],
+    $_ENV["BOOYA_DB_USER"],
+    $_ENV["BOOYA_DB_PASSWD"]
+);
 
 $app->add(new \Slim\Middleware\HttpBasicAuthentication([
     "path" => "/admin",
     "secure" => false,
-    "users" => [
-        "root" => "t00r"
-    ]
+    /*"users" => [*/
+        //"root" => "t00r"
+    /*],*/
+    "authenticator" => new PdoAuthenticator([
+        "pdo" => $pdo
+    ])
 ]));
 
 
 // Page Routes
 // -----------------------------------------------------------------------------
 $app->get('/',function ($request, $response, $args) use($smarty) {
-    return $this->view->render($response, 'pages/home.tpl', [ 
+    return $this->view->render($response, 'pages/home.tpl', [
         'ParentTemplate' => $smarty->compile_id . '.tpl',
         'page' => 'home'
     ]);
 })->setName('home');
 
 $app->get('/about', function($request, $response, $args) use($smarty) {
-    return $this->view->render($response, 'pages/about.tpl', [ 
+    return $this->view->render($response, 'pages/about.tpl', [
         'ParentTemplate' => $smarty->compile_id . '.tpl',
         'page' => 'about'
     ]);
 })->setName('about');
 
 $app->get('/news', function($request, $response, $args) use($smarty) {
-    return $this->view->render($response, 'pages/news.tpl', [ 
+    return $this->view->render($response, 'pages/news.tpl', [
         'ParentTemplate' => $smarty->compile_id . '.tpl',
         'page' => 'news'
     ]);
 })->setName('news');
 
 $app->get('/amps', function($request, $response, $args) use($smarty) {
-    return $this->view->render($response, 'pages/amps.tpl', [ 
+    return $this->view->render($response, 'pages/amps.tpl', [
         'ParentTemplate' => $smarty->compile_id . '.tpl',
         'page' => 'amps'
     ]);
 })->setName('amps');
 
 $app->get('/mods', function($request, $response, $args) use($smarty) {
-    return $this->view->render($response, 'pages/mods.tpl', [ 
+    return $this->view->render($response, 'pages/mods.tpl', [
         'ParentTemplate' => $smarty->compile_id . '.tpl',
         'page' => 'mods'
     ]);
 })->setName('mods');
 
 $app->get('/contact', function($request, $response, $args) use($smarty) {
-    return $this->view->render($response, 'pages/contact.tpl', [ 
+    return $this->view->render($response, 'pages/contact.tpl', [
         'ParentTemplate' => $smarty->compile_id . '.tpl',
         'page' => 'contact'
     ]);
@@ -102,7 +109,7 @@ $app->get('/admin', function($request, $response, $args) use($smarty) {
 
 $app->get('/admin/editor', function($request, $response, $args) use($smarty) {
     try {
-    return $this->view->render($response, 'admin/editor.tpl', [ 
+    return $this->view->render($response, 'admin/editor.tpl', [
         'ParentTemplate' => $smarty->compile_id . '.tpl'
     ]);
      } catch (Exception $e) {
@@ -111,18 +118,24 @@ $app->get('/admin/editor', function($request, $response, $args) use($smarty) {
 })->setName('editor');
 
 $app->get('/admin/amps', function($request, $response, $args) use($smarty) {
-    return $this->view->render($response, 'admin/entries.tpl', [ 
+    return $this->view->render($response, 'admin/entries.tpl', [
         'ParentTemplate' => $smarty->compile_id . '.tpl',
         'page' => 'amp'
     ]);
 })->setName('ampsAdmin');
 
 $app->get('/admin/mods', function($request, $response, $args) use($smarty) {
-    return $this->view->render($response, 'admin/entries.tpl', [ 
+    return $this->view->render($response, 'admin/entries.tpl', [
         'ParentTemplate' => $smarty->compile_id . '.tpl',
         'page' => 'mod'
     ]);
 })->setName('modsAdmin');
+
+$app->get('/admin/users', function($request, $response, $args) use($smarty) {
+    return $this->view->render($response, 'admin/users.tpl', [
+        'ParentTemplate' => $smarty->compile_id . '.tpl'
+    ]);
+})->setName('usersAdmin');
 
 
 // Data Routes
@@ -355,12 +368,23 @@ $app->post('/admin/media', function($request, $response, $args) {
 });
 
 $app->post('/admin/files', function($request, $response, $args) {
-    $post = $request->getHeaders();
+    $post = $request->getParsedBody();
     try {
         $content = json_encode($post['content']);
         $fd = fopen($_SERVER['DOCUMENT_ROOT'] . '/' . $post['file'], 'w');
         fwrite($fd, $content);
         fclose($fd);
+    } catch (Exception $e) {
+        error_status($response, $e->getMessage());
+    }
+});
+
+$app->post('/admin/users', function($request, $response, $args) use($smarty) {
+    $db = getConnection();
+    $post = $request->getParsedBody();
+    error_log(print_R($post,TRUE));
+    try {
+        $db->insert('users', array('user' => $post['user'], 'hash' =>  password_hash($post['password'], PASSWORD_DEFAULT)));
     } catch (Exception $e) {
         error_status($response, $e->getMessage());
     }
@@ -485,7 +509,7 @@ function filemime($file) {
 }
 
 function is_dir_empty($dir) {
-    if (!is_readable($dir)) return NULL; 
+    if (!is_readable($dir)) return NULL;
     $handle = opendir($dir);
     while (false !== ($entry = readdir($handle))) {
         if ($entry != "." && $entry != "..") {
